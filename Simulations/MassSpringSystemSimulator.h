@@ -1,6 +1,8 @@
 #ifndef MASSSPRINGSYSTEMSIMULATOR_h
 #define MASSSPRINGSYSTEMSIMULATOR_h
 #include "Simulator.h"
+#include <list>
+#include <iterator>
 
 // Do Not Change
 #define EULER 0
@@ -42,6 +44,9 @@ public:
 		m_iIntegrator = integrator;
 	}
 
+
+
+
 private:
 	// Data Attributes
 	float m_fMass;
@@ -54,8 +59,14 @@ private:
 	Point2D m_mouse;
 	Point2D m_trackmouse;
 	Point2D m_oldtrackmouse;
+
+	//Variables
+	std::list<Spring> Springs; 
+	std::list<Point> Points;
 };
-//added by us
+
+
+//Represents a single Spring
 class Spring {
 public:
 	int point1;
@@ -63,6 +74,7 @@ public:
 	float stiffness;
 	float initialLength;
 }
+//Represents a single Point
 class Point
 {
 public:
