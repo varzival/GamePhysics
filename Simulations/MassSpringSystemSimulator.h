@@ -44,9 +44,6 @@ public:
 		m_iIntegrator = integrator;
 	}
 
-
-
-
 private:
 	// Data Attributes
 	float m_fMass;
@@ -61,7 +58,7 @@ private:
 	Point2D m_oldtrackmouse;
 
 	//Variables
-	std::list<Spring> Springs; 
+	std::list<Spring> Springs;
 	std::list<Point> Points;
 };
 
@@ -73,6 +70,11 @@ public:
 	int point2;
 	float stiffness;
 	float initialLength;
+
+	//should add Forces to Points in Spring
+	void computeElasticForces(float t) {
+		//TODO
+	}
 }
 //Represents a single Point
 class Point

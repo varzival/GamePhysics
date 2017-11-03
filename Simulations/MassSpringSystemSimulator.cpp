@@ -3,19 +3,24 @@
 
 void simulateTimestep(float timeStep) {
 	std::list<Spring>::iterator Sit = Springs.begin();
-	std::list<Points>::iterator Pit = Points.begin();
+	std::list<Point>::iterator Pit = Points.begin();
 	switch (m_iIntegrator) {
 	case 0:
 		//EULER
-		
 		while (Sit != Springs.end()) {
-
+			Sit->computeElasticForces(timeStep);
 		}
-
+		while (Pit != Points.end()) {
+			Pit->position = Pit->position + (Pit->velocity*timestep);
+		}
+		Pit = Points.begin();
+		while (Pit != Points.end()) {
+			Pit->velocity = Pit->velocity + (Pit->force*timestep);
+		}
 		break;
 	case 1:
 		//Leapfrog
-			break;
+		break;
 	case 2:
 		//Midpoint
 
