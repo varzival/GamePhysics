@@ -3,6 +3,7 @@
 #include "Simulator.h"
 #include <list>
 #include <iterator>
+#include <math.h>
 
 // Do Not Change
 #define EULER 0
@@ -62,8 +63,8 @@ public:
 	void computeElasticForces(float t, Spring s);
 
 	//ugly functions to help me get stuff
-	Point getP(int x);
-	Spring getS(int x);
+	Point* getP(int x);
+	Spring *getS(int x);
 
 	// Do Not Change
 	void setIntegrator(int integrator) {

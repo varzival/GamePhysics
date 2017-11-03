@@ -8,28 +8,30 @@ void MassSpringSystemSimulator::applyExternalForce(Vec3 force) {
 }
 
 //folgende beiden Funktionen muss man irgendwie schöne machen können, nur finde ich keine list.get() oder sowas
-Point MassSpringSystemSimulator::getP(int x) {
+Point* MassSpringSystemSimulator::getP(int x) {
 	std::list<Point>::iterator Pit = Points.begin();
 	while (x > 0) {
 		Pit++;
 		x--;
 	}
-	return *Pit;
+	return &*Pit;
 }
-Spring MassSpringSystemSimulator::getS(int x) {
+Spring* MassSpringSystemSimulator::getS(int x) {
 	std::list<Spring>::iterator Sit = Springs.begin();
 	while (x > 0) {
 		Sit++;
 		x--;
 	}
-	return *Sit;
+	return &*Sit;
 }
 
 void MassSpringSystemSimulator::computeElasticForces(float t, Spring s) {
-	Point p1 = getP(s.point1);
-	Point p2 = getP(s.point2);
-	//TODO
-
+	Point* p1 = getP(s.point1);
+	Point *p2 = getP(s.point2);
+	Vec3 diff1 = p1->position - p2->position;
+	Vec3 diff2 = p2->position - p1->position;
+	p1->force = p1->force + s.stiffness*diff1 / s.initialLength;
+	p2->force = p2->force + s.stiffness*diff2 / s.initialLength;
 }
 
 void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
