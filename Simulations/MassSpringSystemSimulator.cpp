@@ -7,6 +7,7 @@ void MassSpringSystemSimulator::applyExternalForce(Vec3 force) {
 	}
 }
 
+//folgende beiden Funktionen muss man irgendwie schöne machen können, nur finde ich keine list.get() oder sowas
 Point MassSpringSystemSimulator::getP(int x) {
 	std::list<Point>::iterator Pit = Points.begin();
 	while (x > 0) {
