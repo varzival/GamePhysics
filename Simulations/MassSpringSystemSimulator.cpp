@@ -40,13 +40,17 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 	switch (m_iIntegrator) {
 	case 0:
 		//EULER
+
+		//1.Forces
 		applyExternalForce(m_externalForce);
 		while (Sit != Springs.end()) {
 			computeElasticForces(*Sit);
 		}
+		//2.Movement by velocity
 		while (Pit != Points.end()) {
 			Pit->position = Pit->position + (Pit->velocity*timeStep);
 		}
+		//3.Velocity changes by forces
 		Pit = Points.begin();
 		while (Pit != Points.end()) {
 			Pit->velocity = Pit->velocity + (Pit->force / Pit->mass *timeStep);
