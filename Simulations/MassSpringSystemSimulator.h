@@ -60,7 +60,7 @@ public:
 	void applyExternalForce(Vec3 force);
 
 	//should add Forces to Points in Spring
-	void computeElasticForces(float t, Spring s);
+	void computeElasticForces(Spring s);
 
 	//ugly functions to help me get stuff
 	Point* getP(int x);

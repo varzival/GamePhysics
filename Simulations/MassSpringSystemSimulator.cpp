@@ -25,7 +25,7 @@ Spring* MassSpringSystemSimulator::getS(int x) {
 	return &*Sit;
 }
 
-void MassSpringSystemSimulator::computeElasticForces(float t, Spring s) {
+void MassSpringSystemSimulator::computeElasticForces(Spring s) {
 	Point* p1 = getP(s.point1);
 	Point *p2 = getP(s.point2);
 	Vec3 diff1 = p1->position - p2->position;
@@ -42,14 +42,14 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		//EULER
 		applyExternalForce(m_externalForce);
 		while (Sit != Springs.end()) {
-			computeElasticForces(timeStep, *Sit);
+			computeElasticForces(*Sit);
 		}
 		while (Pit != Points.end()) {
 			Pit->position = Pit->position + (Pit->velocity*timeStep);
 		}
 		Pit = Points.begin();
 		while (Pit != Points.end()) {
-			Pit->velocity = Pit->velocity + (Pit->force*timeStep);
+			Pit->velocity = Pit->velocity + (Pit->force / Pit->mass *timeStep);
 		}
 		break;
 	case 1:
