@@ -1,14 +1,20 @@
 #include "MassSpringSystemSimulator.h"
 
+extern void computeElasticForces(float t,Spring s) {
+	//TODO
+	Point p1 = Springs.get(s.point1);
+	Point p2 = Springs.get(s.point2);
 
-void simulateTimestep(float timeStep) {
+}
+
+extern void simulateTimestep(float timeStep) {
 	std::list<Spring>::iterator Sit = Springs.begin();
 	std::list<Point>::iterator Pit = Points.begin();
 	switch (m_iIntegrator) {
 	case 0:
 		//EULER
 		while (Sit != Springs.end()) {
-			Sit->computeElasticForces(timeStep);
+			computeElasticForces(timeStep,Sit);
 		}
 		while (Pit != Points.end()) {
 			Pit->position = Pit->position + (Pit->velocity*timestep);

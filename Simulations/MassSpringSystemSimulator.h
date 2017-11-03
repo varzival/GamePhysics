@@ -3,6 +3,7 @@
 #include "Simulator.h"
 #include <list>
 #include <iterator>
+#include "vector3.h"
 
 // Do Not Change
 #define EULER 0
@@ -38,6 +39,8 @@ public:
 	Vec3 getPositionOfMassPoint(int index);
 	Vec3 getVelocityOfMassPoint(int index);
 	void applyExternalForce(Vec3 force);
+	//should add Forces to Points in Spring
+	void computeElasticForces(float t, Spring s);
 
 	// Do Not Change
 	void setIntegrator(int integrator) {
@@ -60,6 +63,7 @@ private:
 	//Variables
 	std::list<Spring> Springs;
 	std::list<Point> Points;
+
 };
 
 
@@ -71,10 +75,6 @@ public:
 	float stiffness;
 	float initialLength;
 
-	//should add Forces to Points in Spring
-	void computeElasticForces(float t) {
-		//TODO
-	}
 }
 //Represents a single Point
 class Point
