@@ -3,7 +3,6 @@
 #include "Simulator.h"
 #include <list>
 #include <iterator>
-#include "vector3.h"
 
 // Do Not Change
 #define EULER 0
@@ -11,6 +10,25 @@
 #define MIDPOINT 2
 // Do Not Change
 
+//Represents a single Spring
+class Spring {
+public:
+	int point1;
+	int point2;
+	float stiffness;
+	float initialLength;
+
+};
+//Represents a single Point
+class Point
+{
+public:
+	Vec3 position;
+	Vec3 velocity;
+	Vec3 force;
+	float mass;
+	float damping;
+};
 
 class MassSpringSystemSimulator :public Simulator {
 public:
@@ -39,8 +57,13 @@ public:
 	Vec3 getPositionOfMassPoint(int index);
 	Vec3 getVelocityOfMassPoint(int index);
 	void applyExternalForce(Vec3 force);
+
 	//should add Forces to Points in Spring
 	void computeElasticForces(float t, Spring s);
+
+	//ugly functions to help me get stuff
+	Point getP(int x);
+	Spring getS(int x);
 
 	// Do Not Change
 	void setIntegrator(int integrator) {
@@ -65,25 +88,4 @@ private:
 	std::list<Point> Points;
 
 };
-
-
-//Represents a single Spring
-class Spring {
-public:
-	int point1;
-	int point2;
-	float stiffness;
-	float initialLength;
-
-}
-//Represents a single Point
-class Point
-{
-public:
-	Vector3 position;
-	Vector3 velocity;
-	Vector3 force;
-	float mass;
-	float damping;
-}
 #endif
