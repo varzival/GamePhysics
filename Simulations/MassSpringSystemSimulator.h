@@ -55,4 +55,21 @@ private:
 	Point2D m_trackmouse;
 	Point2D m_oldtrackmouse;
 };
+//added by us
+class Spring {
+public:
+	int point1;
+	int point2;
+	float stiffness;
+	float initialLength;
+}
+class Point
+{
+public:
+	Vector3 position;
+	Vector3 velocity;
+	Vector3 force;
+	float mass;
+	float damping;
+}
 #endif
