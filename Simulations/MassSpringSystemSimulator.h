@@ -11,6 +11,13 @@
 #define MIDPOINT 2
 // Do Not Change
 
+
+//Rendering
+#define SPHERECOLOR Vec3(0, 1, 0)
+#define SPHERESIZE Vec3(1, 1, 1)
+#define SPRINGCOLOR Vec3(1, 0, 0)
+
+
 //Represents a single Spring
 class Spring {
 public:

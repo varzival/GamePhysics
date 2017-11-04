@@ -34,6 +34,35 @@ void MassSpringSystemSimulator::computeElasticForces(Spring s) {
 	p2->force = p2->force + s.stiffness*diff2 / s.initialLength;
 }
 
+void MassSpringSystemSimulator::reset()
+{
+	m_mouse.x = m_mouse.y = 0;
+	m_trackmouse.x = m_trackmouse.y = 0;
+	m_oldtrackmouse.x = m_oldtrackmouse.y = 0;
+}
+
+void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContext)
+{
+	Vec3 zero = Vec3(0, 0, 0);
+	DUC->setUpLighting(zero, zero, 0, SPHERECOLOR);
+
+	for each (Point point in Points)
+	{
+		DUC->drawSphere(point.position, SPHERESIZE);
+	}
+
+	DUC->setUpLighting(zero, zero, 0, SPHERECOLOR);
+	for each (Spring spring in Springs)
+	{
+		Point* p1 = getP(spring.point1);
+		Point* p2 = getP(spring.point2);
+		
+		DUC->beginLine();
+		DUC->drawLine(p1->position, SPRINGCOLOR, p2->position, SPRINGCOLOR);
+		DUC->endLine();
+	}
+}
+
 void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 	std::list<Spring>::iterator Sit = Springs.begin();
 	std::list<Point>::iterator Pit = Points.begin();
