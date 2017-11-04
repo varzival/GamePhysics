@@ -11,26 +11,22 @@
 #define MIDPOINT 2
 // Do Not Change
 
-
 //Rendering
-#define SPHERECOLOR Vec3(0, 1, 0)
-#define SPHERESIZE Vec3(1, 1, 1)
-#define SPRINGCOLOR Vec3(1, 0, 0)
+#define SPHERECOLOR Vec3(0.0f, 1.0f, 0.0f)
+#define SPHERESIZE Vec3(0.05f, 0.05f, 0.05f)
+#define SPRINGCOLOR Vec3(1.0f, 1.0f, 0.0f)
 
 
 //Represents a single Spring
-class Spring {
-public:
+struct Spring {
 	int point1;
 	int point2;
 	float stiffness;
 	float initialLength;
-
 };
 //Represents a single Point
-class Point
+struct Point
 {
-public:
 	Vec3 position;
 	Vec3 velocity;
 	Vec3 force;
