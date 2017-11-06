@@ -45,9 +45,9 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 	addSpring(0, 1, 1);
 	addSpring(2, 3, 1);
 
-	m_iIntegrator = LEAPFROG;
+	//m_iIntegrator = LEAPFROG;
 	//Funktioniert noch nicht.
-	//m_iIntegrator = EULER;
+	m_iIntegrator = EULER;
 }
 //Bernhards Job
 const char * MassSpringSystemSimulator::getTestCasesStr()
