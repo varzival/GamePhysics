@@ -68,7 +68,7 @@ void MassSpringSystemSimulator::reset()
 void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContext)
 {
 	Vec3 zero = Vec3(0, 0, 0);
-	
+
 
 	for each (Point point in Points)
 	{
@@ -80,7 +80,7 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 	{
 		Point* p1 = getP(spring.point1);
 		Point* p2 = getP(spring.point2);
-		
+
 		DUC->setUpLighting(Vec3(), Vec3(), 0, SPRINGCOLOR);
 		DUC->beginLine();
 		DUC->drawLine(p1->position, SPRINGCOLOR, p2->position, SPRINGCOLOR);
@@ -106,15 +106,20 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		//1.Forces
 		applyExternalForce(m_externalForce);
 		while (Sit != Springs.end()) {
+			std::cout << "iterating springs for force.." << std::endl;
 			computeElasticForces(*Sit);
 		}
 		//2.Movement by velocity
 		while (Pit != Points.end()) {
+			std::cout << "iterating points for position.." << std::endl;
+
 			Pit->position = Pit->position + (Pit->velocity*timeStep);
 		}
 		//3.Velocity changes by forces
 		Pit = Points.begin();
 		while (Pit != Points.end()) {
+			std::cout << "iterating points for velocity.." << std::endl;
+
 			Pit->velocity = Pit->velocity + (Pit->force / Pit->mass *timeStep);
 		}
 		break;
