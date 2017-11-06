@@ -112,6 +112,7 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 }
 //Bernhards Job
 void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
+	int i, p;
 	switch (m_iIntegrator) {
 	case 0:
 		//EULER
@@ -135,7 +136,7 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 	case 2:
 		//Midpoint
 		//saving original values
-		int p = Points.size();
+		p = Points.size();
 		Vec3 *xarray, *varray;
 		xarray = (Vec3*)malloc(sizeof(Vec3)*p);
 		varray = (Vec3*)malloc(sizeof(Vec3)*p);
@@ -145,7 +146,7 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 			computeElasticForces(spring);
 		}
 		//2.Movement by velocity
-		int i = 0;
+		i = 0;
 		for each (Point p in Points) {
 			xarray[i++] = p.position;
 			p.position = p.position + (p.velocity*timeStep / 2);
