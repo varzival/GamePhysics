@@ -46,25 +46,27 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 	addSpring(2, 3, 1);
 
 	m_iIntegrator = LEAPFROG;
+	//Funktioniert noch nicht.
+	//m_iIntegrator = EULER;
 }
-
+//Bernhards Job
 const char * MassSpringSystemSimulator::getTestCasesStr()
 {
-	return nullptr;
+	return "Frieder, Test";
 }
-
+//Bernhards Job
 void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
 	this->DUC = DUC;
 }
-
+//Bernhards Job
 void MassSpringSystemSimulator::reset()
 {
 	m_mouse.x = m_mouse.y = 0;
 	m_trackmouse.x = m_trackmouse.y = 0;
 	m_oldtrackmouse.x = m_oldtrackmouse.y = 0;
 }
-
+//Bernhards Job
 void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContext)
 {
 	Vec3 zero = Vec3(0, 0, 0);
@@ -87,15 +89,47 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 		DUC->endLine();
 	}
 }
-
+//Bernhards Job
 void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
 {
+	m_iTestCase = testCase;
+	switch (m_iTestCase)
+	{
+	case 0:
+		cout << "Frieder !\n";
+		break;
+	case 1:
+		cout << "TEST!\n";
+		break;
+	default:
+		cout << "Empty Test!\n";
+		break;
+	}
 }
-
+//Bernhards Job
 void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 {
+	Point2D mouseDiff;
+	mouseDiff.x = m_trackmouse.x - m_oldtrackmouse.x;
+	mouseDiff.y = m_trackmouse.y - m_oldtrackmouse.y;
+	if (mouseDiff.x != 0 || mouseDiff.y != 0)
+	{
+		Mat4 worldViewInv = Mat4(DUC->g_camera.GetWorldMatrix() * DUC->g_camera.GetViewMatrix());
+		worldViewInv = worldViewInv.inverse();
+		Vec3 inputView = Vec3((float)mouseDiff.x, (float)-mouseDiff.y, 0);
+		Vec3 inputWorld = worldViewInv.transformVectorNormal(inputView);
+		// find a proper scale!
+		float inputScale = 0.001f;
+		inputWorld = inputWorld * inputScale;
+		//TODO die richtige Kugel finden und Position updaten
+		//m_vfMovableObjectPos = m_vfMovableObjectFinalPos + inputWorld;
+	}
+	else {
+		//Hier die Punkte bewegen.
+		//m_vfMovableObjectFinalPos = m_vfMovableObjectPos;
+	}
 }
-
+//Bernhards Job
 void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 	std::list<Spring>::iterator Sit = Springs.begin();
 	std::list<Point>::iterator Pit = Points.begin();
@@ -122,21 +156,26 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		//Leapfrog
 		break;
 	case 2:
-		//Midpoint
-
+		//TODO Midpoint
 		break;
 	default:
 		std::cout << "This shouldnt happen" << std::endl;
 		break;
 	}
 }
-
+//Bernhards Job linksklick
 void MassSpringSystemSimulator::onClick(int x, int y)
 {
+	m_trackmouse.x = x;
+	m_trackmouse.y = y;
 }
-
+//Bernhards Job andere klicks
 void MassSpringSystemSimulator::onMouse(int x, int y)
 {
+	m_oldtrackmouse.x = x;
+	m_oldtrackmouse.y = y;
+	m_trackmouse.x = x;
+	m_trackmouse.y = y;
 }
 
 void MassSpringSystemSimulator::setMass(float mass)
