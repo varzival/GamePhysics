@@ -168,12 +168,14 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 //Bernhards Job linksklick
 void MassSpringSystemSimulator::onClick(int x, int y)
 {
+	cout << "should be a leftclick!";
 	m_trackmouse.x = x;
 	m_trackmouse.y = y;
 }
 //Bernhards Job andere klicks
 void MassSpringSystemSimulator::onMouse(int x, int y)
 {
+	cout << "should not be a letftclick!";
 	m_oldtrackmouse.x = x;
 	m_oldtrackmouse.y = y;
 	m_trackmouse.x = x;
