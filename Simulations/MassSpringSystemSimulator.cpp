@@ -139,18 +139,14 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		//1.Forces
 		applyExternalForce(m_externalForce);
 		for each (Spring spring in Springs){
-			std::cout << "iterating springs for force.." << std::endl;
 			computeElasticForces(spring);
 		}
 		//2.Movement by velocity
 		for each (Point p in Points){
-			std::cout << "iterating points for position.." << std::endl;
 			p.position = p.position + (p.velocity*timeStep);
 		}
 		//3.Velocity changes by forces
 		for each (Point p in Points) {
-			std::cout << "iterating points for velocity.." << std::endl;
-
 			p.velocity = p.velocity + (p.force / p.mass *timeStep);
 		}
 		break;
