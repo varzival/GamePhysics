@@ -136,7 +136,7 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 	switch (m_iIntegrator) {
 	case 0:
 		//EULER
-
+		std::cout << "starting EULER" << std::endl;
 		//1.Forces
 		applyExternalForce(m_externalForce);
 		while (Sit != Springs.end()) {
@@ -159,8 +159,12 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		break;
 	case 1:
 		//Leapfrog
+		std::cout << "starting Leapfrog" << std::endl;
+
 		break;
 	case 2:
+		std::cout << "starting Midpoint" << std::endl;
+
 		//TODO Midpoint
 		break;
 	default:
