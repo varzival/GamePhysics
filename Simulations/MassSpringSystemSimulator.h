@@ -65,9 +65,6 @@ public:
 	//should add Forces to Points in Spring
 	void computeElasticForces(Spring s);
 
-	//ugly functions to help me get stuff
-	Point* getP(int x);
-	Spring *getS(int x);
 
 	// Do Not Change
 	void setIntegrator(int integrator) {
@@ -88,8 +85,8 @@ private:
 	Point2D m_oldtrackmouse;
 
 	//Variables
-	std::list<Spring> Springs;
-	std::list<Point> Points;
+	std::vector<Spring> Springs;
+	std::vector<Point> Points;
 
 };
 #endif
