@@ -1,9 +1,8 @@
 #include "MassSpringSystemSimulator.h"
 
 void MassSpringSystemSimulator::applyExternalForce(Vec3 force) {
-	std::list<Point>::iterator Pit = Points.begin();
-	while (Pit != Points.end()) {
-		Pit->force = force;
+	for each (Point p in Points){
+		p.force = force;
 	}
 }
 
