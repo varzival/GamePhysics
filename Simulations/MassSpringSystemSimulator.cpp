@@ -128,7 +128,7 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 		//m_vfMovableObjectFinalPos = m_vfMovableObjectPos;
 	}
 }
-//Bernhards Job
+//Bastis Job
 void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 	std::list<Spring>::iterator Sit = Springs.begin();
 	std::list<Point>::iterator Pit = Points.begin();
@@ -163,14 +163,12 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 //Bernhards Job linksklick
 void MassSpringSystemSimulator::onClick(int x, int y)
 {
-	cout << "should be a leftclick!";
 	m_trackmouse.x = x;
 	m_trackmouse.y = y;
 }
-//Bernhards Job andere klicks
+//Bernhards Job andere klicks und mausbewegung
 void MassSpringSystemSimulator::onMouse(int x, int y)
 {
-	cout << "should not be a letftclick!";
 	m_oldtrackmouse.x = x;
 	m_oldtrackmouse.y = y;
 	m_trackmouse.x = x;
