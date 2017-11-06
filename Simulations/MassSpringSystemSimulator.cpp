@@ -139,22 +139,20 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		std::cout << "starting EULER" << std::endl;
 		//1.Forces
 		applyExternalForce(m_externalForce);
-		while (Sit != Springs.end()) {
+		for each (Spring spring in Springs){
 			std::cout << "iterating springs for force.." << std::endl;
-			computeElasticForces(*Sit);
+			computeElasticForces(spring);
 		}
 		//2.Movement by velocity
-		while (Pit != Points.end()) {
+		for each (Point p in Points){
 			std::cout << "iterating points for position.." << std::endl;
-
-			Pit->position = Pit->position + (Pit->velocity*timeStep);
+			p.position = p.position + (p.velocity*timeStep);
 		}
 		//3.Velocity changes by forces
-		Pit = Points.begin();
-		while (Pit != Points.end()) {
+		for each (Point p in Points) {
 			std::cout << "iterating points for velocity.." << std::endl;
 
-			Pit->velocity = Pit->velocity + (Pit->force / Pit->mass *timeStep);
+			p.velocity = p.velocity + (p.force / p.mass *timeStep);
 		}
 		break;
 	case 1:
