@@ -1,7 +1,7 @@
 #include "MassSpringSystemSimulator.h"
 
 void MassSpringSystemSimulator::applyExternalForce(Vec3 force) {
-	for each (Point p in Points){
+	for each (Point p in Points) {
 		p.force = force;
 	}
 }
@@ -135,14 +135,13 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 	switch (m_iIntegrator) {
 	case 0:
 		//EULER
-		std::cout << "starting EULER" << std::endl;
 		//1.Forces
 		applyExternalForce(m_externalForce);
-		for each (Spring spring in Springs){
+		for each (Spring spring in Springs) {
 			computeElasticForces(spring);
 		}
 		//2.Movement by velocity
-		for each (Point p in Points){
+		for each (Point p in Points) {
 			p.position = p.position + (p.velocity*timeStep);
 		}
 		//3.Velocity changes by forces
@@ -152,12 +151,8 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		break;
 	case 1:
 		//Leapfrog
-		std::cout << "starting Leapfrog" << std::endl;
-
 		break;
 	case 2:
-		std::cout << "starting Midpoint" << std::endl;
-
 		//TODO Midpoint
 		break;
 	default:
