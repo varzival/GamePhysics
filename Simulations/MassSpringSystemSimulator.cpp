@@ -6,31 +6,13 @@ void MassSpringSystemSimulator::applyExternalForce(Vec3 force) {
 	}
 }
 
-//folgende beiden Funktionen muss man irgendwie schöne machen können, nur finde ich keine list.get() oder sowas
-Point* MassSpringSystemSimulator::getP(int x) {
-	std::list<Point>::iterator Pit = Points.begin();
-	while (x > 0) {
-		Pit++;
-		x--;
-	}
-	return &*Pit;
-}
-Spring* MassSpringSystemSimulator::getS(int x) {
-	std::list<Spring>::iterator Sit = Springs.begin();
-	while (x > 0) {
-		Sit++;
-		x--;
-	}
-	return &*Sit;
-}
-
 void MassSpringSystemSimulator::computeElasticForces(Spring s) {
-	Point* p1 = getP(s.point1);
-	Point *p2 = getP(s.point2);
-	Vec3 diff1 = p1->position - p2->position;
-	Vec3 diff2 = p2->position - p1->position;
-	p1->force = p1->force + s.stiffness*diff1 / s.initialLength;
-	p2->force = p2->force + s.stiffness*diff2 / s.initialLength;
+	Point p1 = Points[s.point1];
+	Point p2 = Points[s.point2];
+	Vec3 diff1 = p1.position - p2.position;
+	Vec3 diff2 = p2.position - p1.position;
+	p1.force = p1.force + s.stiffness*diff1 / s.initialLength;
+	p2.force = p2.force + s.stiffness*diff2 / s.initialLength;
 }
 
 MassSpringSystemSimulator::MassSpringSystemSimulator()
@@ -79,12 +61,12 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 
 	for each (Spring spring in Springs)
 	{
-		Point* p1 = getP(spring.point1);
-		Point* p2 = getP(spring.point2);
+		Point p1 = Points[spring.point1];
+		Point p2 = Points[spring.point2];
 
 		DUC->setUpLighting(Vec3(), Vec3(), 0, SPRINGCOLOR);
 		DUC->beginLine();
-		DUC->drawLine(p1->position, SPRINGCOLOR, p2->position, SPRINGCOLOR);
+		DUC->drawLine(p1.position, SPRINGCOLOR, p2.position, SPRINGCOLOR);
 		DUC->endLine();
 	}
 }
@@ -130,8 +112,6 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 }
 //Bernhards Job
 void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
-	std::list<Spring>::iterator Sit = Springs.begin();
-	std::list<Point>::iterator Pit = Points.begin();
 	switch (m_iIntegrator) {
 	case 0:
 		//EULER
@@ -156,7 +136,7 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		//TODO Midpoint
 		break;
 	default:
-		std::cout << "This shouldnt happen" << std::endl;
+		std::cout << "This shouldnt happen!!!!!11ELF" << std::endl;
 		break;
 	}
 }
