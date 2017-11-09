@@ -13,10 +13,8 @@ void MassSpringSystemSimulator::computeElasticForces(Spring s) {
 	Vec3 diff2 = p2->position - p1->position;
 	p1->force = p1->force + s.stiffness*diff1 / s.initialLength;
 	p2->force = p2->force + s.stiffness*diff2 / s.initialLength;
-	//Test
-	//Points[s.point1].force = p1.force;
-	//Points[s.point2].force = p2.force;
-	//TODO p1 und p2 werden einfach verfallen sind ja nur in dieser Funktion deklariert.
+	p1->force *= m_fDamping;
+	p2->force *= m_fDamping;
 }
 
 MassSpringSystemSimulator::MassSpringSystemSimulator()
@@ -122,10 +120,10 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 		inputWorld = inputWorld * inputScale;
 		for (int i = 0; i < Points.size(); i++)
 		{
-			Points[i].force = inputWorld;
+			Points[i].force += inputWorld;
 		}
 	}
-	else 
+	else
 	{
 		for (int i = 0; i < Points.size(); i++)
 		{
@@ -166,35 +164,35 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		varray = (Vec3*)malloc(sizeof(Vec3)*p);
 		//1.Forces
 		applyExternalForce(m_externalForce);
-		for each (Spring spring in Springs) {
-			computeElasticForces(spring);
+		for (std::vector<Spring>::iterator iterator = Springs.begin(), end = Springs.end(); iterator != end; ++iterator) {
+			computeElasticForces(*iterator);
 		}
 		//2.Movement by velocity
 		i = 0;
-		for each (Point p in Points) {
-			xarray[i++] = p.position;
-			p.position = p.position + (p.velocity*timeStep / 2);
+		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
+			xarray[i++] = iterator->position;
+			iterator->position = iterator->position + (iterator->velocity*timeStep / 2);
 		}
 		//3.Velocity changes by forces
 		i = 0;
-		for each (Point p in Points) {
-			varray[i++] = p.velocity;
-			p.velocity = p.velocity + (p.force / p.mass *timeStep / 2);
+		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
+			varray[i++] = iterator->velocity;
+			iterator->velocity = iterator->velocity + (iterator->force / iterator->mass *timeStep / 2);
 		}
 		//4.Forces
 		applyExternalForce(m_externalForce);
-		for each (Spring spring in Springs) {
-			computeElasticForces(spring);
+		for (std::vector<Spring>::iterator iterator = Springs.begin(), end = Springs.end(); iterator != end; ++iterator) {
+			computeElasticForces(*iterator);
 		}
 		//5.Movement by velocity
 		i = 0;
-		for each (Point p in Points) {
-			p.position = xarray[i++] + (p.velocity*timeStep);
+		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
+			iterator->position = xarray[i++] + (iterator->velocity*timeStep);
 		}
 		//6.Velocity changes by forces
 		i = 0;
-		for each (Point p in Points) {
-			p.velocity = varray[i++] + (p.force / p.mass *timeStep);
+		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
+			iterator->velocity = varray[i++] + (iterator->force / iterator->mass *timeStep);
 		}
 		free(varray);
 		free(xarray);
@@ -238,7 +236,7 @@ int MassSpringSystemSimulator::addMassPoint(Vec3 position, Vec3 Velocity, bool i
 	p.velocity = Velocity;
 	p.mass = 1;
 	p.damping = 0;
-	p.force = Vec3(0.0,0.0,0.0);
+	p.force = Vec3(0.0, 0.0, 0.0);
 	Points.push_back(p);
 	return Points.size() - 1;
 }
