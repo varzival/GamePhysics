@@ -1,18 +1,18 @@
 #include "MassSpringSystemSimulator.h"
 
 void MassSpringSystemSimulator::applyExternalForce(Vec3 force) {
-	for each (Point p in Points) {
-		p.force = force;
+	for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
+		iterator->force = force;
 	}
 }
 
 void MassSpringSystemSimulator::computeElasticForces(Spring s) {
-	Point p1 = Points[s.point1];
-	Point p2 = Points[s.point2];
-	Vec3 diff1 = p1.position - p2.position;
-	Vec3 diff2 = p2.position - p1.position;
-	p1.force = p1.force + s.stiffness*diff1 / s.initialLength;
-	p2.force = p2.force + s.stiffness*diff2 / s.initialLength;
+	Point * p1 = &Points[s.point1];
+	Point * p2 = &Points[s.point2];
+	Vec3 diff1 = p1->position - p2->position;
+	Vec3 diff2 = p2->position - p1->position;
+	p1->force = p1->force + s.stiffness*diff1 / s.initialLength;
+	p2->force = p2->force + s.stiffness*diff2 / s.initialLength;
 	//Test
 	//Points[s.point1].force = p1.force;
 	//Points[s.point2].force = p2.force;
@@ -143,16 +143,16 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		//1.Forces
 		//TODO Wo wird m_extrenalForce ein Wert zugewiesen?
 		applyExternalForce(m_externalForce);
-		for each (Spring spring in Springs) {
-			computeElasticForces(spring);
+		for (std::vector<Spring>::iterator iterator = Springs.begin(), end = Springs.end(); iterator != end; ++iterator) {
+			computeElasticForces(*iterator);
 		}
 		//2.Movement by velocity
-		for each (Point p in Points) {
-			p.position = p.position + (p.velocity*timeStep);
+		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
+			iterator->position = (Vec3)(iterator->position + (iterator->velocity*timeStep));
 		}
 		//3.Velocity changes by forces
-		for each (Point p in Points) {
-			p.velocity = p.velocity + (p.force / p.mass *timeStep);
+		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
+			iterator->velocity = iterator->velocity + (iterator->force / iterator->mass *timeStep);
 		}
 		break;
 	case 1:
