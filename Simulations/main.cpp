@@ -252,7 +252,7 @@ void CALLBACK OnFrameMove( double dTime, float fElapsedTime, void* pUserContext 
 		g_pSimulator->initUI(g_pDUC);
 		g_iPreTestCase = g_iTestCase;
 	}
-	if(!g_bSimulateByStep){
+	if(g_bSimulateByStep){
 #ifdef ADAPTIVESTEP
 		g_pSimulator->externalForcesCalculations(fElapsedTime);
 		static float timeAcc = 0;
