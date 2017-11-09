@@ -120,17 +120,16 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 		// find a proper scale!
 		float inputScale = 0.001f;
 		inputWorld = inputWorld * inputScale;
-		for each(Point p in Points)
+		for (int i = 0; i < Points.size(); i++)
 		{
-			cout << inputWorld;
-			p.force = inputWorld;
+			Points[i].force = inputWorld;
 		}
 	}
 	else 
 	{
-		for each(Point p in Points)
+		for (int i = 0; i < Points.size(); i++)
 		{
-			p.force = Vec3(0.0, 0.0, 0.0);
+			Points[i].force = Vec3(0.0, 0.0, 0.0);
 		}
 	}
 }
