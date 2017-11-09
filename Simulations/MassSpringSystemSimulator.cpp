@@ -21,6 +21,7 @@ void MassSpringSystemSimulator::computeElasticForces(Spring s) {
 
 MassSpringSystemSimulator::MassSpringSystemSimulator()
 {
+	/*
 	addMassPoint(Vec3(0.5, 0.5, 0.5), Vec3(), false);
 	addMassPoint(Vec3(0.1, -0.2, 0.1), Vec3(), false);
 	addMassPoint(Vec3(0.0, 0.2, 0.4), Vec3(), false);
@@ -29,6 +30,15 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 
 	addSpring(0, 1, 1);
 	addSpring(2, 3, 1);
+	*/
+
+	//basic setup
+	addMassPoint(Vec3(0, 0, 0), Vec3(-1, 0, 0), false);
+	addMassPoint(Vec3(0, 2, 0), Vec3(1, 0, 0), false);
+	addSpring(0, 1, 1.0f);
+	setMass(10.0f);
+	setStiffness(40.0f);
+
 
 	//m_iIntegrator = LEAPFROG;
 	//Funktioniert noch nicht.
@@ -258,20 +268,20 @@ void MassSpringSystemSimulator::addSpring(int masspoint1, int masspoint2, float 
 
 int MassSpringSystemSimulator::getNumberOfMassPoints()
 {
-	return 0;
+	return Points.size();
 }
 
 int MassSpringSystemSimulator::getNumberOfSprings()
 {
-	return 0;
+	return Springs.size();
 }
 
 Vec3 MassSpringSystemSimulator::getPositionOfMassPoint(int index)
 {
-	return Vec3();
+	return Points.at(index).position;
 }
 
 Vec3 MassSpringSystemSimulator::getVelocityOfMassPoint(int index)
 {
-	return Vec3();
+	return Points.at(index).velocity;
 }
