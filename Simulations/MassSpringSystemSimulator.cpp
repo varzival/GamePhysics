@@ -112,6 +112,7 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 }
 //Bastis Job
 void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
+	int i, p;
 	switch (m_iIntegrator) {
 	case 0:
 		//EULER
@@ -133,7 +134,46 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		//Leapfrog
 		break;
 	case 2:
-		//TODO Midpoint
+		//Midpoint
+		//saving original values
+		p = Points.size();
+		Vec3 *xarray, *varray;
+		xarray = (Vec3*)malloc(sizeof(Vec3)*p);
+		varray = (Vec3*)malloc(sizeof(Vec3)*p);
+		//1.Forces
+		applyExternalForce(m_externalForce);
+		for each (Spring spring in Springs) {
+			computeElasticForces(spring);
+		}
+		//2.Movement by velocity
+		i = 0;
+		for each (Point p in Points) {
+			xarray[i++] = p.position;
+			p.position = p.position + (p.velocity*timeStep / 2);
+		}
+		//3.Velocity changes by forces
+		i = 0;
+		for each (Point p in Points) {
+			varray[i++] = p.velocity;
+			p.velocity = p.velocity + (p.force / p.mass *timeStep / 2);
+		}
+		//4.Forces
+		applyExternalForce(m_externalForce);
+		for each (Spring spring in Springs) {
+			computeElasticForces(spring);
+		}
+		//5.Movement by velocity
+		i = 0;
+		for each (Point p in Points) {
+			p.position = xarray[i++] + (p.velocity*timeStep);
+		}
+		//6.Velocity changes by forces
+		i = 0;
+		for each (Point p in Points) {
+			p.velocity = varray[i++] + (p.force / p.mass *timeStep);
+		}
+		free(varray);
+		free(xarray);
 		break;
 	default:
 		std::cout << "This shouldnt happen!!!!!11ELF" << std::endl;
