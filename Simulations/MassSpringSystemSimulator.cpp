@@ -13,15 +13,19 @@ void MassSpringSystemSimulator::computeElasticForces(Spring s) {
 	Vec3 diff2 = p2.position - p1.position;
 	p1.force = p1.force + s.stiffness*diff1 / s.initialLength;
 	p2.force = p2.force + s.stiffness*diff2 / s.initialLength;
+	//Test
+	//Points[s.point1].force = p1.force;
+	//Points[s.point2].force = p2.force;
+	//TODO p1 und p2 werden einfach verfallen sind ja nur in dieser Funktion deklariert.
 }
 
 MassSpringSystemSimulator::MassSpringSystemSimulator()
 {
-	addMassPoint(Vec3(0.5, 0.5, 0.5), Vec3(), true);
-	addMassPoint(Vec3(0.1, -0.2, 0.1), Vec3(), true);
-	addMassPoint(Vec3(0.0, 0.2, 0.4), Vec3(), true);
-	addMassPoint(Vec3(-0.5, -0.5, 0.5), Vec3(), true);
-	addMassPoint(Vec3(-0.5, 0.4, 0.1), Vec3(), true);
+	addMassPoint(Vec3(0.5, 0.5, 0.5), Vec3(), false);
+	addMassPoint(Vec3(0.1, -0.2, 0.1), Vec3(), false);
+	addMassPoint(Vec3(0.0, 0.2, 0.4), Vec3(), false);
+	addMassPoint(Vec3(-0.5, -0.5, 0.5), Vec3(), false);
+	addMassPoint(Vec3(-0.5, 0.4, 0.1), Vec3(), false);
 
 	addSpring(0, 1, 1);
 	addSpring(2, 3, 1);
@@ -33,7 +37,7 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 //Bernhards Job
 const char * MassSpringSystemSimulator::getTestCasesStr()
 {
-	return "Frieder, Test";
+	return "Euler, Leapfrog, Midpoint";
 }
 //Bernhards Job
 void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
@@ -52,13 +56,11 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 {
 	Vec3 zero = Vec3(0, 0, 0);
 
-
 	for each (Point point in Points)
 	{
 		DUC->setUpLighting(Vec3(), Vec3(1.0f, 1.0f, 1.0f), 0.1, SPHERECOLOR);
 		DUC->drawSphere(point.position, SPHERESIZE);
 	}
-
 	for each (Spring spring in Springs)
 	{
 		Point p1 = Points[spring.point1];
@@ -77,10 +79,16 @@ void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
 	switch (m_iTestCase)
 	{
 	case 0:
-		cout << "Frieder !\n";
+		cout << "Euler\n";
+		m_iIntegrator = EULER;
 		break;
 	case 1:
-		cout << "TEST!\n";
+		cout << "Leapfrog\n";
+		m_iIntegrator = LEAPFROG;
+		break;
+	case 2:
+		cout << "Midpoint\n";
+		m_iIntegrator = MIDPOINT;
 		break;
 	default:
 		cout << "Empty Test!\n";
@@ -102,12 +110,18 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 		// find a proper scale!
 		float inputScale = 0.001f;
 		inputWorld = inputWorld * inputScale;
-		//TODO die richtige Kugel finden und Position updaten
-		//m_vfMovableObjectPos = m_vfMovableObjectFinalPos + inputWorld;
+		for each(Point p in Points)
+		{
+			cout << inputWorld;
+			p.force = inputWorld;
+		}
 	}
-	else {
-		//Hier die Punkte bewegen.
-		//m_vfMovableObjectFinalPos = m_vfMovableObjectPos;
+	else 
+	{
+		for each(Point p in Points)
+		{
+			p.force = Vec3(0.0, 0.0, 0.0);
+		}
 	}
 }
 //Bastis Job
@@ -117,6 +131,7 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 	case 0:
 		//EULER
 		//1.Forces
+		//TODO Wo wird m_extrenalForce ein Wert zugewiesen?
 		applyExternalForce(m_externalForce);
 		for each (Spring spring in Springs) {
 			computeElasticForces(spring);
@@ -214,7 +229,7 @@ int MassSpringSystemSimulator::addMassPoint(Vec3 position, Vec3 Velocity, bool i
 	p.velocity = Velocity;
 	p.mass = 1;
 	p.damping = 0;
-	p.force = 0;
+	p.force = Vec3(0.0,0.0,0.0);
 	Points.push_back(p);
 	return Points.size() - 1;
 }
