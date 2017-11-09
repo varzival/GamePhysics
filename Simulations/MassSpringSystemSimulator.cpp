@@ -11,10 +11,10 @@ void MassSpringSystemSimulator::computeElasticForces(Spring s) {
 	Point * p2 = &Points[s.point2];
 	Vec3 diff1 = p1->position - p2->position;
 	Vec3 diff2 = p2->position - p1->position;
-	p1->force = p1->force + s.stiffness*diff1 / s.initialLength;
-	p2->force = p2->force + s.stiffness*diff2 / s.initialLength;
-	p1->force *= m_fDamping;
-	p2->force *= m_fDamping;
+	p1->force = p1->force + s.stiffness*diff2 / s.initialLength;
+	p2->force = p2->force + s.stiffness*diff1 / s.initialLength;
+	//p1->force *= m_fDamping;
+	//p2->force *= m_fDamping;
 }
 
 MassSpringSystemSimulator::MassSpringSystemSimulator()
@@ -118,17 +118,21 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 		// find a proper scale!
 		float inputScale = 0.001f;
 		inputWorld = inputWorld * inputScale;
-		for (int i = 0; i < Points.size(); i++)
+		m_externalForce = inputWorld;
+		/*for (int i = 0; i < Points.size(); i++)
 		{
-			Points[i].force += inputWorld;
+			Points[i].force = inputWorld;
 		}
+		*/
 	}
 	else
 	{
-		for (int i = 0; i < Points.size(); i++)
+		m_externalForce = Vec3(0, 0, 0);
+		/*for (int i = 0; i < Points.size(); i++)
 		{
 			Points[i].force = Vec3(0.0, 0.0, 0.0);
 		}
+		*/
 	}
 }
 //Bastis Job
@@ -138,7 +142,6 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 	case 0:
 		//EULER
 		//1.Forces
-		//TODO Wo wird m_extrenalForce ein Wert zugewiesen?
 		applyExternalForce(m_externalForce);
 		for (std::vector<Spring>::iterator iterator = Springs.begin(), end = Springs.end(); iterator != end; ++iterator) {
 			computeElasticForces(*iterator);
@@ -234,7 +237,7 @@ int MassSpringSystemSimulator::addMassPoint(Vec3 position, Vec3 Velocity, bool i
 	Point p;
 	p.position = position;
 	p.velocity = Velocity;
-	p.mass = 1;
+	p.mass = m_fMass;
 	p.damping = 0;
 	p.force = Vec3(0.0, 0.0, 0.0);
 	Points.push_back(p);
@@ -256,7 +259,7 @@ void MassSpringSystemSimulator::addSpring(int masspoint1, int masspoint2, float 
 
 	Spring s;
 	s.initialLength = initialLength;
-	s.stiffness = 1;
+	s.stiffness = m_fStiffness;
 	s.point1 = masspoint1;
 	s.point2 = masspoint2;
 	Springs.push_back(s);
