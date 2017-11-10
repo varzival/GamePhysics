@@ -48,6 +48,8 @@ struct Setup
 
 class MassSpringSystemSimulator :public Simulator {
 public:
+	float * timeStep;
+
 	// Construtors
 	MassSpringSystemSimulator();
 
@@ -103,7 +105,7 @@ private:
 	Point2D m_trackmouse;
 	Point2D m_oldtrackmouse;
 	int m_setupNr;
-	int m_msetupChoice;
+	int m_setupChoice;
 
 	//Variables
 	std::vector<Spring> Springs;

@@ -46,7 +46,7 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 	setups[0] = setup1;
 	setups[1] = setup2;
 
-	m_msetupChoice = 0;
+	m_setupChoice = 0;
 	m_setupNr = 0;
 	loadSetup(0);
 
@@ -67,14 +67,17 @@ MassSpringSystemSimulator::~MassSpringSystemSimulator()
 //Bernhards Job
 const char * MassSpringSystemSimulator::getTestCasesStr()
 {
-	return "Euler, Leapfrog, Midpoint";
+	//return "Euler, Leapfrog, Midpoint";
+	return "Demo1, Demo2, Demo3, Demo4";
 }
 //Bernhards Job
 void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
 	this->DUC = DUC;
 	TwType TW_TYPE_TESTCASE = TwDefineEnumFromString("Setup", "Setup1, Setup2");
-	TwAddVarRW(DUC->g_pTweakBar, "Setup", TW_TYPE_TESTCASE, &m_msetupChoice, "");
+	TwAddVarRW(DUC->g_pTweakBar, "Setup", TW_TYPE_TESTCASE, &m_setupChoice, "");
+	TW_TYPE_TESTCASE = TwDefineEnumFromString("Integrator", "Euler, Leapfrog, Midpoint");
+	TwAddVarRW(DUC->g_pTweakBar, "Integration Method", TW_TYPE_TESTCASE, &m_iIntegrator, "");
 
 }
 
@@ -122,12 +125,13 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 		DUC->endLine();
 	}
 
-	notifySetupChanged(m_msetupChoice);
+	notifySetupChanged(m_setupChoice);
 }
 //Bernhards Job
 void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
 {
 	m_iTestCase = testCase;
+	/*
 	switch (m_iTestCase)
 	{
 	case 0:
@@ -145,6 +149,51 @@ void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
 	default:
 		cout << "Empty Test!\n";
 		break;
+	}
+	*/
+
+	switch (m_iTestCase)
+	{
+		case 0:
+			cout << "DEMO 1\n";
+			loadSetup(0);
+			m_iIntegrator = EULER;
+			m_setupChoice = 0;
+			m_setupNr = 0;
+			*timeStep = 0.1f;
+			break;
+		case 1:
+			cout << "DEMO 2\n";
+			loadSetup(0);
+			m_iIntegrator = EULER;
+			m_setupChoice = 0;
+			m_setupNr = 0;
+			*timeStep = 0.005f;
+			break;
+		case 2:
+			cout << "DEMO 3\n";
+			loadSetup(0);
+			m_iIntegrator = MIDPOINT;
+			m_setupChoice = 0;
+			m_setupNr = 0;
+			*timeStep = 0.005f;
+			break;
+		case 3:
+			cout << "DEMO 4\n";
+			loadSetup(1);
+			m_iIntegrator = EULER;
+			m_setupChoice = 1;
+			m_setupNr = 1;
+			*timeStep = 0.001f;
+			break;
+		default:
+			cout << "Empty Test!\n";
+			loadSetup(0);
+			m_iIntegrator = EULER;
+			m_setupChoice = 0;
+			m_setupNr = 0;
+			*timeStep = 0.1f;
+			break;
 	}
 }
 //Bernhards Job
