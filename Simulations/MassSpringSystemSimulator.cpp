@@ -222,14 +222,21 @@ void MassSpringSystemSimulator::onMouse(int x, int y)
 
 void MassSpringSystemSimulator::setMass(float mass)
 {
+	for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
+		iterator->mass = mass;
+	}
 }
 
 void MassSpringSystemSimulator::setStiffness(float stiffness)
 {
+	for (std::vector<Spring>::iterator iterator = Springs.begin(), end = Springs.end(); iterator != end; ++iterator) {
+		iterator->stiffness = stiffness;
+	}
 }
 
 void MassSpringSystemSimulator::setDampingFactor(float damping)
 {
+	m_fDamping = damping;
 }
 
 int MassSpringSystemSimulator::addMassPoint(Vec3 position, Vec3 Velocity, bool isFixed)
