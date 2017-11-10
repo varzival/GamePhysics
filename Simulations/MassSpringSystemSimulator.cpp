@@ -104,6 +104,7 @@ void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 //Bernhards Job
 void MassSpringSystemSimulator::reset()
 {
+	loadSetup(m_setupNr);
 	m_mouse.x = m_mouse.y = 0;
 	m_trackmouse.x = m_trackmouse.y = 0;
 	m_oldtrackmouse.x = m_oldtrackmouse.y = 0;
