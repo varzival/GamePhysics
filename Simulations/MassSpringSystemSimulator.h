@@ -83,6 +83,9 @@ public:
 	Vec3 getVelocityOfMassPoint(int index);
 	void applyExternalForce(Vec3 force);
 
+	//Utility
+	void printVec3(Vec3 vec);
+
 	//should add Forces to Points in Spring
 	void computeElasticForces(Spring s);
 
@@ -106,6 +109,7 @@ private:
 	Point2D m_oldtrackmouse;
 	int m_setupNr;
 	int m_setupChoice;
+	bool m_demo1StepSimulated;
 
 	//Variables
 	std::vector<Spring> Springs;

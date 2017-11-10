@@ -6,6 +6,11 @@ void MassSpringSystemSimulator::applyExternalForce(Vec3 force) {
 	}
 }
 
+void MassSpringSystemSimulator::printVec3(Vec3 vec)
+{
+	cout << "(" << vec[0] << ", " << vec[1] << ", " << vec[2] << ")";
+}
+
 void MassSpringSystemSimulator::computeElasticForces(Spring s) {
 	Point * p1 = &Points[s.point1];
 	Point * p2 = &Points[s.point2];
@@ -46,6 +51,7 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 	setups[0] = setup1;
 	setups[1] = setup2;
 
+	m_demo1StepSimulated = false;
 	m_setupChoice = 0;
 	m_setupNr = 0;
 	loadSetup(0);
@@ -156,6 +162,7 @@ void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
 	{
 		case 0:
 			cout << "DEMO 1\n";
+			m_demo1StepSimulated = false;
 			loadSetup(0);
 			m_iIntegrator = EULER;
 			m_setupChoice = 0;
@@ -296,6 +303,21 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 	default:
 		std::cout << "This shouldnt happen!!!!!11ELF" << std::endl;
 		break;
+	}
+
+
+	if (m_iTestCase == 0 && !m_demo1StepSimulated)
+	{
+		m_demo1StepSimulated = true;
+		cout << "Position & Velocity after 1 Step:\n";
+
+		for (int i = 0; i < Points.size(); i++) {
+			cout << "Point " << i << " position: ";
+			printVec3(Points.at(i).position);
+			cout << "\nPoint " << i << " velocity: ";
+			printVec3(Points.at(i).velocity);
+			cout << "\n";
+		}
 	}
 }
 //Bernhards Job linksklick
