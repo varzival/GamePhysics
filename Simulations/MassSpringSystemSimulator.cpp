@@ -40,9 +40,22 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 	addMassPointToVector(Vec3(0.0, 0.2, 0.4), Vec3(), false, points_s2);
 	addMassPointToVector(Vec3(-0.5, -0.5, 0.5), Vec3(), false, points_s2);
 	addMassPointToVector(Vec3(-0.5, 0.4, 0.1), Vec3(), false, points_s2);
+	addMassPointToVector(Vec3(-0.5, 0.1, 0.1), Vec3(), false, points_s2);
+	addMassPointToVector(Vec3(-0.5, 0.4, 0.5), Vec3(), false, points_s2);
+	addMassPointToVector(Vec3(-0.1, 0.1, 0.1), Vec3(), false, points_s2);
+	addMassPointToVector(Vec3(0.0, 0.0, 0.0), Vec3(), false, points_s2);
+	addMassPointToVector(Vec3(0.1, 0.1, 0.1), Vec3(), false, points_s2);
 
-	addSpringToVector(0, 1, 1, springs_s2);
-	addSpringToVector(2, 3, 1, springs_s2);
+	addSpringToVector(0, 1, 0.3, springs_s2);
+	addSpringToVector(2, 3, 0.3, springs_s2);
+	addSpringToVector(3, 4, 0.3, springs_s2);
+	addSpringToVector(4, 5, 0.5, springs_s2);
+	addSpringToVector(4, 6, 0.5, springs_s2);
+	addSpringToVector(6, 7, 0.5, springs_s2);
+	addSpringToVector(7, 8, 0.5, springs_s2);
+	addSpringToVector(8, 9, 0.5, springs_s2);
+	addSpringToVector(3, 8, 0.5, springs_s2);
+	addSpringToVector(3, 7, 0.5, springs_s2);
 
 	Setup setup1 = { points_s1, springs_s1, 10.0f, 40.0f, 0.0f };
 	Setup setup2 = { points_s2, springs_s2, 10.0f, 40.0f, 0.0f };
