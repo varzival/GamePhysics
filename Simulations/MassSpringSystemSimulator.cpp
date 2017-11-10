@@ -91,9 +91,24 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 		Point p1 = Points[spring.point1];
 		Point p2 = Points[spring.point2];
 
-		DUC->setUpLighting(Vec3(), Vec3(), 0, SPRINGCOLOR);
+		//Fancy Spring color effect
+		DirectX::XMVECTOR v1 = p1.position.toDirectXVector();
+		DirectX::XMVECTOR v2 = p2.position.toDirectXVector();
+		DirectX::XMVECTOR l = XMVector3Length(v1 - v2);
+		float diff = XMVectorGetX(l); //distance between Points
+		float diffFact = (diff - spring.initialLength) / spring.initialLength; //distance in relation to spring length
+		float cf; //color factor for second color in [0, 1]
+		if (diffFact < 0.0f) cf = 0.0f;
+		else {
+			cf = (diffFact + 1.0f) / SPRINGCOLORFACTOR;
+		}
+		if (cf > 1.0f) cf = 1.0f;
+
+		Vec3 resultColor = SPRINGCOLOR1 * (1.0f - cf) + SPRINGCOLOR2 * cf; //linear interpolation of colors
+
+		DUC->setUpLighting(Vec3(), Vec3(), 0, resultColor);
 		DUC->beginLine();
-		DUC->drawLine(p1.position, SPRINGCOLOR, p2.position, SPRINGCOLOR);
+		DUC->drawLine(p1.position, resultColor, p2.position, resultColor);
 		DUC->endLine();
 	}
 

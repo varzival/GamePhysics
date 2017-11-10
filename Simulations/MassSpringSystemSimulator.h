@@ -14,7 +14,9 @@
 //Rendering
 #define SPHERECOLOR Vec3(0.0f, 1.0f, 0.0f)
 #define SPHERESIZE Vec3(0.05f, 0.05f, 0.05f)
-#define SPRINGCOLOR Vec3(1.0f, 1.0f, 0.0f)
+#define SPRINGCOLOR1 Vec3(1.0f, 1.0f, 0.0f)
+#define SPRINGCOLOR2 Vec3(1.0f, 0.0f, 0.0f)
+#define SPRINGCOLORFACTOR 2.0f;
 
 
 //Represents a single Spring
