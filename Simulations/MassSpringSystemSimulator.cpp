@@ -19,24 +19,36 @@ void MassSpringSystemSimulator::computeElasticForces(Spring s) {
 
 MassSpringSystemSimulator::MassSpringSystemSimulator()
 {
-	/*
-	addMassPoint(Vec3(0.5, 0.5, 0.5), Vec3(), false);
-	addMassPoint(Vec3(0.1, -0.2, 0.1), Vec3(), false);
-	addMassPoint(Vec3(0.0, 0.2, 0.4), Vec3(), false);
-	addMassPoint(Vec3(-0.5, -0.5, 0.5), Vec3(), false);
-	addMassPoint(Vec3(-0.5, 0.4, 0.1), Vec3(), false);
+	std::vector<Point>* points_s1 = new std::vector<Point>();
+	std::vector<Spring>* springs_s1 = new std::vector<Spring>();
+	std::vector<Point>* points_s2 = new std::vector<Point>();
+	std::vector<Spring>* springs_s2 = new std::vector<Spring>();
 
-	addSpring(0, 1, 1);
-	addSpring(2, 3, 1);
-	*/
 
 	//basic setup
-	addMassPoint(Vec3(0, 0, 0), Vec3(-1, 0, 0), false);
-	addMassPoint(Vec3(0, 2, 0), Vec3(1, 0, 0), false);
-	addSpring(0, 1, 1.0f);
-	setMass(10.0f);
-	setStiffness(40.0f);
+	addMassPointToVector(Vec3(0, 0, 0), Vec3(-1, 0, 0), false, points_s1);
+	addMassPointToVector(Vec3(0, 2, 0), Vec3(1, 0, 0), false, points_s1);
+	addSpringToVector(0, 1, 1.0f, springs_s1);
 
+	addMassPointToVector(Vec3(0.5, 0.5, 0.5), Vec3(), false, points_s2);
+	addMassPointToVector(Vec3(0.1, -0.2, 0.1), Vec3(), false, points_s2);
+	addMassPointToVector(Vec3(0.0, 0.2, 0.4), Vec3(), false, points_s2);
+	addMassPointToVector(Vec3(-0.5, -0.5, 0.5), Vec3(), false, points_s2);
+	addMassPointToVector(Vec3(-0.5, 0.4, 0.1), Vec3(), false, points_s2);
+
+	addSpringToVector(0, 1, 1, springs_s2);
+	addSpringToVector(2, 3, 1, springs_s2);
+
+	Setup setup1 = { points_s1, springs_s1, 10.0f, 40.0f, 0.0f };
+	Setup setup2 = { points_s2, springs_s2, 10.0f, 40.0f, 0.0f };
+
+	setups = (Setup*)malloc(sizeof(Setup) * 2);
+	setups[0] = setup1;
+	setups[1] = setup2;
+
+	m_msetupChoice = 0;
+	m_setupNr = 0;
+	loadSetup(0);
 
 	//m_iIntegrator = LEAPFROG;
 	//Funktioniert noch nicht.
@@ -51,7 +63,12 @@ const char * MassSpringSystemSimulator::getTestCasesStr()
 void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
 	this->DUC = DUC;
+	TwType TW_TYPE_TESTCASE = TwDefineEnumFromString("Setup", "Setup1, Setup2");
+	TwAddVarRW(DUC->g_pTweakBar, "Setup", TW_TYPE_TESTCASE, &m_msetupChoice, "");
+
 }
+
+
 //Bernhards Job
 void MassSpringSystemSimulator::reset()
 {
@@ -79,6 +96,8 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 		DUC->drawLine(p1.position, SPRINGCOLOR, p2.position, SPRINGCOLOR);
 		DUC->endLine();
 	}
+
+	notifySetupChanged(m_msetupChoice);
 }
 //Bernhards Job
 void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
@@ -220,6 +239,29 @@ void MassSpringSystemSimulator::onMouse(int x, int y)
 	m_trackmouse.y = y;
 }
 
+void MassSpringSystemSimulator::notifySetupChanged(int setupNr)
+{
+	if (m_setupNr != setupNr)
+	{
+		m_setupNr = setupNr;
+		loadSetup(setupNr);
+	}
+}
+
+void MassSpringSystemSimulator::loadSetup(int setupNr)
+{
+	Springs.clear();
+	Points.clear();
+	Setup setup = setups[setupNr];
+
+	Springs = *setup.Springs;
+	Points = *setup.Points;
+
+	setMass(setup.mass);
+	setDampingFactor(setup.damping);
+	setStiffness(setup.stiffness);
+}
+
 void MassSpringSystemSimulator::setMass(float mass)
 {
 	m_fMass = mass;
@@ -243,17 +285,27 @@ void MassSpringSystemSimulator::setDampingFactor(float damping)
 
 int MassSpringSystemSimulator::addMassPoint(Vec3 position, Vec3 Velocity, bool isFixed)
 {
+	return addMassPointToVector(position, Velocity, isFixed, &Points);
+}
+
+int MassSpringSystemSimulator::addMassPointToVector(Vec3 position, Vec3 Velocity, bool isFixed, std::vector<Point>* massVector)
+{
 	Point p;
 	p.position = position;
 	p.velocity = Velocity;
 	p.mass = m_fMass;
 	p.damping = 0;
 	p.force = Vec3(0.0, 0.0, 0.0);
-	Points.push_back(p);
-	return Points.size() - 1;
+	massVector->push_back(p);
+	return massVector->size() - 1;
 }
 
 void MassSpringSystemSimulator::addSpring(int masspoint1, int masspoint2, float initialLength)
+{
+	addSpringToVector(masspoint1, masspoint2, initialLength, &Springs);
+}
+
+void MassSpringSystemSimulator::addSpringToVector(int masspoint1, int masspoint2, float initialLength, std::vector<Spring>* springVector)
 {
 	if (masspoint1 > (Points.size() - 1))
 	{
@@ -271,8 +323,7 @@ void MassSpringSystemSimulator::addSpring(int masspoint1, int masspoint2, float 
 	s.stiffness = m_fStiffness;
 	s.point1 = masspoint1;
 	s.point2 = masspoint2;
-	Springs.push_back(s);
-
+	springVector->push_back(s);
 }
 
 int MassSpringSystemSimulator::getNumberOfMassPoints()

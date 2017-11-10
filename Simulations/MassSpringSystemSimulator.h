@@ -34,6 +34,16 @@ struct Point
 	float damping;
 };
 
+//Represents a Spring/Masspoint constellation
+struct Setup
+{
+	std::vector<Point>* Points;
+	std::vector<Spring>* Springs;
+	float mass;
+	float stiffness;
+	float damping;
+};
+
 class MassSpringSystemSimulator :public Simulator {
 public:
 	// Construtors
@@ -49,13 +59,17 @@ public:
 	void simulateTimestep(float timeStep);
 	void onClick(int x, int y);
 	void onMouse(int x, int y);
+	void notifySetupChanged(int setupNr);
+	void loadSetup(int setupNr);
 
 	// Specific Functions
 	void setMass(float mass);
 	void setStiffness(float stiffness);
 	void setDampingFactor(float damping);
 	int addMassPoint(Vec3 position, Vec3 Velocity, bool isFixed);
+	int addMassPointToVector(Vec3 position, Vec3 Velocity, bool isFixed, std::vector<Point>* massVector);
 	void addSpring(int masspoint1, int masspoint2, float initialLength);
+	void addSpringToVector(int masspoint1, int masspoint2, float initialLength, std::vector<Spring>* springVector);
 	int getNumberOfMassPoints();
 	int getNumberOfSprings();
 	Vec3 getPositionOfMassPoint(int index);
@@ -83,10 +97,14 @@ private:
 	Point2D m_mouse;
 	Point2D m_trackmouse;
 	Point2D m_oldtrackmouse;
+	int m_setupNr;
+	int m_msetupChoice;
 
 	//Variables
 	std::vector<Spring> Springs;
 	std::vector<Point> Points;
+
+	Setup* setups;
 
 };
 #endif
