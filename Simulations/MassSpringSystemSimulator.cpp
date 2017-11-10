@@ -222,6 +222,7 @@ void MassSpringSystemSimulator::onMouse(int x, int y)
 
 void MassSpringSystemSimulator::setMass(float mass)
 {
+	m_fMass = mass;
 	for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
 		iterator->mass = mass;
 	}
@@ -229,6 +230,7 @@ void MassSpringSystemSimulator::setMass(float mass)
 
 void MassSpringSystemSimulator::setStiffness(float stiffness)
 {
+	m_fStiffness = stiffness;
 	for (std::vector<Spring>::iterator iterator = Springs.begin(), end = Springs.end(); iterator != end; ++iterator) {
 		iterator->stiffness = stiffness;
 	}
