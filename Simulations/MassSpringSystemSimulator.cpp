@@ -54,6 +54,16 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 	//Funktioniert noch nicht.
 	m_iIntegrator = EULER;
 }
+MassSpringSystemSimulator::~MassSpringSystemSimulator()
+{
+	for (int i = 0; i < 2; i++)
+	{
+		setups[i].Points->clear();
+		setups[i].Springs->clear();
+	}
+	free(setups);
+}
+
 //Bernhards Job
 const char * MassSpringSystemSimulator::getTestCasesStr()
 {

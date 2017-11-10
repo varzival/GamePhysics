@@ -51,6 +51,9 @@ public:
 	// Construtors
 	MassSpringSystemSimulator();
 
+	//Destructor
+	~MassSpringSystemSimulator();
+
 	// UI Functions
 	const char * getTestCasesStr();
 	void initUI(DrawingUtilitiesClass * DUC);
