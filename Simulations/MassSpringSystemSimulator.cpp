@@ -15,9 +15,8 @@ void MassSpringSystemSimulator::computeElasticForces(Spring s) {
 	Point * p1 = &Points[s.point1];
 	Point * p2 = &Points[s.point2];
 	Vec3 diff1 = p1->position - p2->position;
-	Vec3 diff2 = p2->position - p1->position;
-	p1->force = p1->force + s.stiffness*diff2 / s.initialLength;
-	p2->force = p2->force + s.stiffness*diff1 / s.initialLength;
+	p1->force -= s.stiffness*diff1 / s.initialLength;
+	p2->force -= s.stiffness*-diff1 / s.initialLength;
 	p1->force -= p1->velocity*m_fDamping;
 	p2->force -= p2->velocity*m_fDamping;
 }
@@ -140,7 +139,7 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 	}
 
 	//"Kollision" mit der Box
-	for (vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) 
+	for (vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator)
 	{
 		if (iterator->position.x < -0.5)
 		{
@@ -161,7 +160,7 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 		{
 			iterator->position.y = 0.5;
 			iterator->velocity.y *= -0.5;
-		}	
+		}
 		if (iterator->position.z < -0.5)
 		{
 			iterator->position.z = -0.5;
@@ -264,7 +263,7 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		}
 		//3.Velocity changes by forces
 		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
-			iterator->velocity = iterator->velocity + (iterator->force / iterator->mass *timeStep);
+			iterator->velocity = iterator->velocity + ((iterator->force / iterator->mass) *timeStep);
 		}
 		break;
 	case 1:
@@ -292,7 +291,7 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		i = 0;
 		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
 			varray[i++] = iterator->velocity;
-			iterator->velocity = iterator->velocity + (iterator->force / iterator->mass *timeStep / 2);
+			iterator->velocity = iterator->velocity + ((iterator->force / iterator->mass) *timeStep / 2);
 		}
 		//4.Forces
 		applyExternalForce(m_externalForce);
@@ -307,7 +306,7 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		//6.Velocity changes by forces
 		i = 0;
 		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
-			iterator->velocity = varray[i++] + (iterator->force / iterator->mass *timeStep);
+			iterator->velocity = varray[i++] + ((iterator->force / iterator->mass) *timeStep);
 		}
 		free(varray);
 		free(xarray);
