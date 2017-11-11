@@ -69,8 +69,6 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 	m_setupNr = 0;
 	loadSetup(0);
 
-	//m_iIntegrator = LEAPFROG;
-	//Funktioniert noch nicht.
 	m_iIntegrator = EULER;
 }
 MassSpringSystemSimulator::~MassSpringSystemSimulator()
@@ -83,13 +81,12 @@ MassSpringSystemSimulator::~MassSpringSystemSimulator()
 	free(setups);
 }
 
-//Bernhards Job
 const char * MassSpringSystemSimulator::getTestCasesStr()
 {
 	//return "Euler, Leapfrog, Midpoint";
 	return "Demo1, Demo2, Demo3, Demo4";
 }
-//Bernhards Job
+
 void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
 	this->DUC = DUC;
@@ -97,11 +94,8 @@ void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 	TwAddVarRW(DUC->g_pTweakBar, "Setup", TW_TYPE_TESTCASE, &m_setupChoice, "");
 	TW_TYPE_TESTCASE = TwDefineEnumFromString("Integrator", "Euler, Leapfrog, Midpoint");
 	TwAddVarRW(DUC->g_pTweakBar, "Integration Method", TW_TYPE_TESTCASE, &m_iIntegrator, "");
-
 }
 
-
-//Bernhards Job
 void MassSpringSystemSimulator::reset()
 {
 	loadSetup(m_setupNr);
@@ -109,7 +103,7 @@ void MassSpringSystemSimulator::reset()
 	m_trackmouse.x = m_trackmouse.y = 0;
 	m_oldtrackmouse.x = m_oldtrackmouse.y = 0;
 }
-//Bernhards Job
+
 void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContext)
 {
 	Vec3 zero = Vec3(0, 0, 0);
@@ -147,30 +141,9 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 
 	notifySetupChanged(m_setupChoice);
 }
-//Bernhards Job
 void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
 {
 	m_iTestCase = testCase;
-	/*
-	switch (m_iTestCase)
-	{
-	case 0:
-		cout << "Euler\n";
-		m_iIntegrator = EULER;
-		break;
-	case 1:
-		cout << "Leapfrog\n";
-		m_iIntegrator = LEAPFROG;
-		break;
-	case 2:
-		cout << "Midpoint\n";
-		m_iIntegrator = MIDPOINT;
-		break;
-	default:
-		cout << "Empty Test!\n";
-		break;
-	}
-	*/
 
 	switch (m_iTestCase)
 	{
@@ -217,7 +190,6 @@ void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
 		break;
 	}
 }
-//Bernhards Job
 void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 {
 	Point2D mouseDiff;
@@ -230,14 +202,16 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 		Vec3 inputView = Vec3((float)mouseDiff.x, (float)-mouseDiff.y, 0);
 		Vec3 inputWorld = worldViewInv.transformVectorNormal(inputView);
 		// find a proper scale!
-		float inputScale = 0.001f;
+		float inputScale = 4.f;
 		inputWorld = inputWorld * inputScale;
 		m_externalForce = inputWorld;
-		/*for (int i = 0; i < Points.size(); i++)
+		for (int i = 0; i < Points.size(); i++)
 		{
-			Points[i].force = inputWorld;
+			Points[i].force += inputWorld;
+			cout << inputWorld << " ";
+			cout << Points[i].force;
 		}
-		*/
+		cout << "\n";
 	}
 	else
 	{
@@ -249,7 +223,7 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 		*/
 	}
 }
-//Bastis Job
+
 void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 	int i, p;
 	switch (m_iIntegrator) {
@@ -334,13 +308,13 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		}
 	}
 }
-//Bernhards Job linksklick
+//linksklick
 void MassSpringSystemSimulator::onClick(int x, int y)
 {
 	m_trackmouse.x = x;
 	m_trackmouse.y = y;
 }
-//Bernhards Job andere klicks und mausbewegung
+//andere klicks und mausbewegung
 void MassSpringSystemSimulator::onMouse(int x, int y)
 {
 	m_oldtrackmouse.x = x;
