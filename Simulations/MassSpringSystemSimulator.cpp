@@ -14,11 +14,12 @@ void MassSpringSystemSimulator::printVec3(Vec3 vec)
 void MassSpringSystemSimulator::computeElasticForces(Spring s) {
 	Point * p1 = &Points[s.point1];
 	Point * p2 = &Points[s.point2];
-	Vec3 diff1 = p1->position - p2->position;
-	p1->force -= s.stiffness*diff1 / s.initialLength;
-	p2->force -= s.stiffness*-diff1 / s.initialLength;
-	p1->force -= p1->velocity*m_fDamping;
-	p2->force -= p2->velocity*m_fDamping;
+	Vec3 dif = p1->position - p2->position;
+	float le = (sqrt(p1->position.squaredDistanceTo(p2->position)));
+	float mult = -s.stiffness* le / s.initialLength;
+	Vec3 n = (dif / le)*mult;
+	p1->force = m_externalForce + n - p1->velocity*m_fDamping;
+	p2->force = m_externalForce - n - p2->velocity*m_fDamping;
 }
 
 MassSpringSystemSimulator::MassSpringSystemSimulator()
