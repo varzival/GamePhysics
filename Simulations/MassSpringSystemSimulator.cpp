@@ -254,6 +254,7 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 	{
 		//Gravity
 		if (m_gravityOn) m_externalForce = Vec3(0, -100.0, 0);
+		else m_externalForce = Vec3();
 	}
 }
 

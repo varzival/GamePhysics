@@ -272,10 +272,13 @@ void CALLBACK OnFrameMove( double dTime, float fElapsedTime, void* pUserContext 
 		g_pSimulator->simulateTimestep(g_fTimestep);
 #endif
 	}else{
-		if(DXUTIsKeyDown(VK_SPACE))
+		if (DXUTIsKeyDown(VK_SPACE)) {
+			g_pSimulator->externalForcesCalculations(g_fTimestep);
 			g_pSimulator->simulateTimestep(g_fTimestep);
+		}
 		if(DXUTIsKeyDown('S') && firstTime)
 		{
+			g_pSimulator->externalForcesCalculations(g_fTimestep);
 			g_pSimulator->simulateTimestep(g_fTimestep);
 			firstTime = false;
 		}else{
