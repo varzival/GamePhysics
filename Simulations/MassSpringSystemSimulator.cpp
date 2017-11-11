@@ -15,8 +15,10 @@ void MassSpringSystemSimulator::computeElasticForces(Spring s) {
 	Point * p1 = &Points[s.point1];
 	Point * p2 = &Points[s.point2];
 	Vec3 diff1 = p1->position - p2->position;
-	p1->force -= s.stiffness*diff1 / s.initialLength;
-	p2->force -= s.stiffness*-diff1 / s.initialLength;
+	float diff1length = sqrt(diff1[0] * diff1[0] + diff1[1] * diff1[1] + diff1[2] * diff1[2]);
+	Vec3 diff1initialLenth = (s.initialLength / diff1length) * diff1;
+	p1->force -= s.stiffness*(diff1 - diff1initialLenth);
+	p2->force -= s.stiffness*-(diff1 - diff1initialLenth);
 	p1->force -= p1->velocity*m_fDamping;
 	p2->force -= p2->velocity*m_fDamping;
 }
