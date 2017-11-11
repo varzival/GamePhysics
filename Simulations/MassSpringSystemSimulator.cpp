@@ -139,6 +139,41 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 		DUC->endLine();
 	}
 
+	//"Kollision" mit der Box
+	for (vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) 
+	{
+		if (iterator->position.x < -0.5)
+		{
+			iterator->position.x = -0.5;
+			iterator->velocity.x = 0.0;
+		}
+		if (iterator->position.x > 0.5)
+		{
+			iterator->position.x = 0.5;
+			iterator->velocity.x = 0.0;
+		}
+		if (iterator->position.y < -0.5)
+		{
+			iterator->position.y = -0.5;
+			iterator->velocity.y = 0.0;
+		}
+		if (iterator->position.y > 0.5)
+		{
+			iterator->position.y = 0.5;
+			iterator->velocity.y = 0.0;
+		}	
+		if (iterator->position.z < -0.5)
+		{
+			iterator->position.z = -0.5;
+			iterator->velocity.z = 0.0;
+		}
+		if (iterator->position.z > 0.5)
+		{
+			iterator->position.z = 0.5;
+			iterator->velocity.z = 0.0;
+		}
+	}
+
 	notifySetupChanged(m_setupChoice);
 }
 void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
