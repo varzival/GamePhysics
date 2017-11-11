@@ -57,7 +57,7 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 	addSpringToVector(3, 7, 0.5, springs_s2);
 
 	Setup setup1 = { points_s1, springs_s1, 10.0f, 40.0f, 0.0f };
-	Setup setup2 = { points_s2, springs_s2, 10.0f, 40.0f, 0.0f };
+	Setup setup2 = { points_s2, springs_s2, 10.0f, 40.0f, 2.0f };
 
 	setups = (Setup*)malloc(sizeof(Setup) * 2);
 	setups[0] = setup1;
