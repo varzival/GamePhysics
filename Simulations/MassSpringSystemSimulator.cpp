@@ -18,8 +18,8 @@ void MassSpringSystemSimulator::computeElasticForces(Spring s) {
 	Vec3 diff2 = p2->position - p1->position;
 	p1->force = p1->force + s.stiffness*diff2 / s.initialLength;
 	p2->force = p2->force + s.stiffness*diff1 / s.initialLength;
-	//p1->force *= m_fDamping;
-	//p2->force *= m_fDamping;
+	p1->force -= p1->velocity*m_fDamping;
+	p2->force -= p2->velocity*m_fDamping;
 }
 
 MassSpringSystemSimulator::MassSpringSystemSimulator()
@@ -174,47 +174,47 @@ void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
 
 	switch (m_iTestCase)
 	{
-		case 0:
-			cout << "DEMO 1\n";
-			m_demo1StepSimulated = false;
-			loadSetup(0);
-			m_iIntegrator = EULER;
-			m_setupChoice = 0;
-			m_setupNr = 0;
-			*timeStep = 0.1f;
-			break;
-		case 1:
-			cout << "DEMO 2\n";
-			loadSetup(0);
-			m_iIntegrator = EULER;
-			m_setupChoice = 0;
-			m_setupNr = 0;
-			*timeStep = 0.005f;
-			break;
-		case 2:
-			cout << "DEMO 3\n";
-			loadSetup(0);
-			m_iIntegrator = MIDPOINT;
-			m_setupChoice = 0;
-			m_setupNr = 0;
-			*timeStep = 0.005f;
-			break;
-		case 3:
-			cout << "DEMO 4\n";
-			loadSetup(1);
-			m_iIntegrator = EULER;
-			m_setupChoice = 1;
-			m_setupNr = 1;
-			*timeStep = 0.001f;
-			break;
-		default:
-			cout << "Empty Test!\n";
-			loadSetup(0);
-			m_iIntegrator = EULER;
-			m_setupChoice = 0;
-			m_setupNr = 0;
-			*timeStep = 0.1f;
-			break;
+	case 0:
+		cout << "DEMO 1\n";
+		m_demo1StepSimulated = false;
+		loadSetup(0);
+		m_iIntegrator = EULER;
+		m_setupChoice = 0;
+		m_setupNr = 0;
+		*timeStep = 0.1f;
+		break;
+	case 1:
+		cout << "DEMO 2\n";
+		loadSetup(0);
+		m_iIntegrator = EULER;
+		m_setupChoice = 0;
+		m_setupNr = 0;
+		*timeStep = 0.005f;
+		break;
+	case 2:
+		cout << "DEMO 3\n";
+		loadSetup(0);
+		m_iIntegrator = MIDPOINT;
+		m_setupChoice = 0;
+		m_setupNr = 0;
+		*timeStep = 0.005f;
+		break;
+	case 3:
+		cout << "DEMO 4\n";
+		loadSetup(1);
+		m_iIntegrator = EULER;
+		m_setupChoice = 1;
+		m_setupNr = 1;
+		*timeStep = 0.001f;
+		break;
+	default:
+		cout << "Empty Test!\n";
+		loadSetup(0);
+		m_iIntegrator = EULER;
+		m_setupChoice = 0;
+		m_setupNr = 0;
+		*timeStep = 0.1f;
+		break;
 	}
 }
 //Bernhards Job
