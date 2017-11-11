@@ -205,22 +205,11 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 		float inputScale = 4.f;
 		inputWorld = inputWorld * inputScale;
 		m_externalForce = inputWorld;
-		for (int i = 0; i < Points.size(); i++)
-		{
-			Points[i].force += inputWorld;
-			cout << inputWorld << " ";
-			cout << Points[i].force;
-		}
-		cout << "\n";
 	}
 	else
 	{
-		m_externalForce = Vec3(0, 0, 0);
-		/*for (int i = 0; i < Points.size(); i++)
-		{
-			Points[i].force = Vec3(0.0, 0.0, 0.0);
-		}
-		*/
+		//Gravity
+		m_externalForce = Vec3(0, -100.0, 0);
 	}
 }
 
