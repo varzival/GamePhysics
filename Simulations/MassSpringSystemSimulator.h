@@ -44,6 +44,8 @@ struct Setup
 	float mass;
 	float stiffness;
 	float damping;
+	bool gravity;
+	bool collisions;
 };
 
 class MassSpringSystemSimulator :public Simulator {
@@ -110,6 +112,8 @@ private:
 	int m_setupNr;
 	int m_setupChoice;
 	bool m_demo1StepSimulated;
+	bool m_gravityOn;
+	bool m_collisionsOn;
 
 	//Variables
 	std::vector<Spring> Springs;

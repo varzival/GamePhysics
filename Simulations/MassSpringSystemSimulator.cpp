@@ -58,8 +58,8 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 	addSpringToVector(3, 8, 0.5, springs_s2);
 	addSpringToVector(3, 7, 0.5, springs_s2);
 
-	Setup setup1 = { points_s1, springs_s1, 10.0f, 40.0f, 0.0f };
-	Setup setup2 = { points_s2, springs_s2, 10.0f, 40.0f, 2.0f };
+	Setup setup1 = { points_s1, springs_s1, 10.0f, 40.0f, 0.0f, false, false };
+	Setup setup2 = { points_s2, springs_s2, 10.0f, 40.0f, 2.0f, true, true };
 
 	setups = (Setup*)malloc(sizeof(Setup) * 2);
 	setups[0] = setup1;
@@ -95,6 +95,8 @@ void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 	TwAddVarRW(DUC->g_pTweakBar, "Setup", TW_TYPE_TESTCASE, &m_setupChoice, "");
 	TW_TYPE_TESTCASE = TwDefineEnumFromString("Integrator", "Euler, Leapfrog, Midpoint");
 	TwAddVarRW(DUC->g_pTweakBar, "Integration Method", TW_TYPE_TESTCASE, &m_iIntegrator, "");
+	TwAddVarRW(DUC->g_pTweakBar, "Gravity", TW_TYPE_BOOLCPP, &m_gravityOn, "");
+	TwAddVarRW(DUC->g_pTweakBar, "Collisions", TW_TYPE_BOOLCPP, &m_collisionsOn, "");
 }
 
 void MassSpringSystemSimulator::reset()
@@ -140,39 +142,45 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCon
 		DUC->endLine();
 	}
 
-	//"Kollision" mit der Box
-	for (vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator)
+
+	if (m_collisionsOn)
 	{
-		if (iterator->position.x < -0.5)
+
+		//"Kollision" mit der Box
+		for (vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator)
 		{
-			iterator->position.x = -0.5;
-			iterator->velocity.x *= -0.5;
+			if (iterator->position.x < -0.5)
+			{
+				iterator->position.x = -0.5;
+				iterator->velocity.x *= -0.5;
+			}
+			if (iterator->position.x > 0.5)
+			{
+				iterator->position.x = 0.5;
+				iterator->velocity.x *= -0.5;
+			}
+			if (iterator->position.y < -0.5)
+			{
+				iterator->position.y = -0.5;
+				iterator->velocity.y *= -0.5;
+			}
+			if (iterator->position.y > 0.5)
+			{
+				iterator->position.y = 0.5;
+				iterator->velocity.y *= -0.5;
+			}
+			if (iterator->position.z < -0.5)
+			{
+				iterator->position.z = -0.5;
+				iterator->velocity.z *= -0.5;
+			}
+			if (iterator->position.z > 0.5)
+			{
+				iterator->position.z = 0.5;
+				iterator->velocity.z *= -0.5;
+			}
 		}
-		if (iterator->position.x > 0.5)
-		{
-			iterator->position.x = 0.5;
-			iterator->velocity.x *= -0.5;
-		}
-		if (iterator->position.y < -0.5)
-		{
-			iterator->position.y = -0.5;
-			iterator->velocity.y *= -0.5;
-		}
-		if (iterator->position.y > 0.5)
-		{
-			iterator->position.y = 0.5;
-			iterator->velocity.y *= -0.5;
-		}
-		if (iterator->position.z < -0.5)
-		{
-			iterator->position.z = -0.5;
-			iterator->velocity.z *= -0.5;
-		}
-		if (iterator->position.z > 0.5)
-		{
-			iterator->position.z = 0.5;
-			iterator->velocity.z *= -0.5;
-		}
+
 	}
 
 	notifySetupChanged(m_setupChoice);
@@ -245,7 +253,7 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 	else
 	{
 		//Gravity
-		m_externalForce = Vec3(0, -100.0, 0);
+		if (m_gravityOn) m_externalForce = Vec3(0, -100.0, 0);
 	}
 }
 
@@ -369,6 +377,8 @@ void MassSpringSystemSimulator::loadSetup(int setupNr)
 	setMass(setup.mass);
 	setDampingFactor(setup.damping);
 	setStiffness(setup.stiffness);
+	m_gravityOn = setup.gravity;
+	m_collisionsOn = setup.collisions;
 }
 
 void MassSpringSystemSimulator::setMass(float mass)
