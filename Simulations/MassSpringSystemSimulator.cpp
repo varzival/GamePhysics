@@ -2,7 +2,13 @@
 
 void MassSpringSystemSimulator::applyExternalForce(Vec3 force) {
 	for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
-		iterator->force = force;
+
+		if (m_gravityOn && !m_gotMouseStuff) {
+			iterator->force = iterator->mass*9.81*Vec3(0, -0.1, 0);
+		}
+		else {
+			iterator->force = force;
+		}
 	}
 }
 
@@ -256,6 +262,7 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 	mouseDiff.y = m_trackmouse.y - m_oldtrackmouse.y;
 	if (mouseDiff.x != 0 || mouseDiff.y != 0)
 	{
+		m_gotMouseStuff = true;
 		Mat4 worldViewInv = Mat4(DUC->g_camera.GetWorldMatrix() * DUC->g_camera.GetViewMatrix());
 		worldViewInv = worldViewInv.inverse();
 		Vec3 inputView = Vec3((float)mouseDiff.x, (float)-mouseDiff.y, 0);
@@ -267,8 +274,12 @@ void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 	}
 	else
 	{
+		m_gotMouseStuff = false;
 		//Gravity
-		if (m_gravityOn) m_externalForce = Vec3(0, -100.0, 0);
+		if (m_gravityOn) {
+			//this value should never be actually used
+			m_externalForce = Vec3(0, -100.0, 0);
+		}
 		else m_externalForce = Vec3();
 	}
 }
@@ -311,16 +322,16 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		//2.Movement by velocity
 		i = 0;
 		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
-			xarray[i++] = iterator->position;
 			if (!(iterator->fixed)) {
+				xarray[i++] = iterator->position;
 				iterator->position = iterator->position + (iterator->velocity*timeStep / 2);
 			}
 		}
 		//3.Velocity changes by forces
 		i = 0;
 		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
-			varray[i++] = iterator->velocity;
 			if (!(iterator->fixed)) {
+				varray[i++] = iterator->velocity;
 				iterator->velocity = iterator->velocity + ((iterator->force / iterator->mass) *timeStep / 2);
 			}
 		}

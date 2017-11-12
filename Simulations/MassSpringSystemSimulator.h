@@ -115,6 +115,7 @@ private:
 	bool m_demo1StepSimulated;
 	bool m_gravityOn;
 	bool m_collisionsOn;
+	bool m_gotMouseStuff;
 
 	//Variables
 	std::vector<Spring> Springs;
