@@ -285,7 +285,7 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		}
 		//2.Movement by velocity
 		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
-			if (!iterator->fixed)
+			if (!(iterator->fixed))
 				iterator->position = (Vec3)(iterator->position + (iterator->velocity*timeStep));
 		}
 		//3.Velocity changes by forces
@@ -312,7 +312,9 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		i = 0;
 		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
 			xarray[i++] = iterator->position;
-			iterator->position = iterator->position + (iterator->velocity*timeStep / 2);
+			if (!(iterator->fixed)) {
+				iterator->position = iterator->position + (iterator->velocity*timeStep / 2);
+			}
 		}
 		//3.Velocity changes by forces
 		i = 0;
@@ -328,8 +330,9 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		//5.Movement by velocity
 		i = 0;
 		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
-			if (!iterator->fixed)
+			if (!(iterator->fixed)) {
 				iterator->position = xarray[i++] + (iterator->velocity*timeStep);
+			}
 		}
 		//6.Velocity changes by forces
 		i = 0;
