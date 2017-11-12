@@ -29,6 +29,8 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 	std::vector<Spring>* springs_s1 = new std::vector<Spring>();
 	std::vector<Point>* points_s2 = new std::vector<Point>();
 	std::vector<Spring>* springs_s2 = new std::vector<Spring>();
+	std::vector<Point>* points_s3 = new std::vector<Point>();
+	std::vector<Spring>* springs_s3 = new std::vector<Spring>();
 
 
 	//basic setup
@@ -58,12 +60,25 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 	addSpringToVector(3, 8, 0.5, springs_s2);
 	addSpringToVector(3, 7, 0.5, springs_s2);
 
+	addMassPointToVector(Vec3(-0.5, 0.0, 0.5), Vec3(), false, points_s3);
+	addMassPointToVector(Vec3(-0.1, 0.0, 0.5), Vec3(), false, points_s3);
+	addMassPointToVector(Vec3(-0.3, 0.0, 0.1), Vec3(), false, points_s3);
+	addMassPointToVector(Vec3(-0.3, 0.4, 0.3), Vec3(), false, points_s3);
+
+	addSpringToVector(0, 1, 0.4, springs_s3);
+	addSpringToVector(0, 2, 0.4, springs_s3);
+	addSpringToVector(0, 3, 0.4, springs_s3);
+	addSpringToVector(1, 2, 0.4, springs_s3);
+	addSpringToVector(1, 3, 0.4, springs_s3);
+	addSpringToVector(2, 3, 0.4, springs_s3);
+
 	Setup setup1 = { points_s1, springs_s1, 10.0f, 40.0f, 0.0f, false, false };
 	Setup setup2 = { points_s2, springs_s2, 10.0f, 40.0f, 2.0f, true, true };
+	Setup setup3 = { points_s3, springs_s3, 5.0f, 100.0f, 1.0f, true, true };
 
-	setups = (Setup*)malloc(sizeof(Setup) * 2);
 	setups[0] = setup1;
 	setups[1] = setup2;
+	setups[2] = setup3;
 
 	m_demo1StepSimulated = false;
 	m_setupChoice = 0;
@@ -91,7 +106,7 @@ const char * MassSpringSystemSimulator::getTestCasesStr()
 void MassSpringSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
 	this->DUC = DUC;
-	TwType TW_TYPE_TESTCASE = TwDefineEnumFromString("Setup", "Setup1, Setup2");
+	TwType TW_TYPE_TESTCASE = TwDefineEnumFromString("Setup", "Setup1, Setup2, Setup3");
 	TwAddVarRW(DUC->g_pTweakBar, "Setup", TW_TYPE_TESTCASE, &m_setupChoice, "");
 	TW_TYPE_TESTCASE = TwDefineEnumFromString("Integrator", "Euler, Leapfrog, Midpoint");
 	TwAddVarRW(DUC->g_pTweakBar, "Integration Method", TW_TYPE_TESTCASE, &m_iIntegrator, "");

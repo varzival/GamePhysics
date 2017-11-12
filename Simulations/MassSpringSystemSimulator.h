@@ -119,7 +119,7 @@ private:
 	std::vector<Spring> Springs;
 	std::vector<Point> Points;
 
-	Setup* setups;
+	Setup setups [3];
 
 };
 #endif
