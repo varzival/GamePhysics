@@ -34,6 +34,7 @@ struct Point
 	Vec3 force;
 	float mass;
 	float damping;
+	bool fixed;
 };
 
 //Represents a Spring/Masspoint constellation

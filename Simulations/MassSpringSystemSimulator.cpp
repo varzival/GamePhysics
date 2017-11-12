@@ -38,7 +38,7 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 	addMassPointToVector(Vec3(0, 2, 0), Vec3(1, 0, 0), false, points_s1);
 	addSpringToVector(0, 1, 1.0f, springs_s1);
 
-	addMassPointToVector(Vec3(0.5, 0.5, 0.5), Vec3(), false, points_s2);
+	addMassPointToVector(Vec3(0.5, 0.5, 0.5), Vec3(), true, points_s2);
 	addMassPointToVector(Vec3(0.1, -0.2, 0.1), Vec3(), false, points_s2);
 	addMassPointToVector(Vec3(0.0, 0.2, 0.4), Vec3(), false, points_s2);
 	addMassPointToVector(Vec3(-0.5, -0.5, 0.5), Vec3(), false, points_s2);
@@ -63,7 +63,7 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 	addMassPointToVector(Vec3(-0.5, 0.0, 0.5), Vec3(), false, points_s3);
 	addMassPointToVector(Vec3(-0.1, 0.0, 0.5), Vec3(), false, points_s3);
 	addMassPointToVector(Vec3(-0.3, 0.0, 0.1), Vec3(), false, points_s3);
-	addMassPointToVector(Vec3(-0.3, 0.4, 0.3), Vec3(), false, points_s3);
+	addMassPointToVector(Vec3(-0.3, 0.4, 0.3), Vec3(), true, points_s3);
 
 	addSpringToVector(0, 1, 0.4, springs_s3);
 	addSpringToVector(0, 2, 0.4, springs_s3);
@@ -285,7 +285,8 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		}
 		//2.Movement by velocity
 		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
-			iterator->position = (Vec3)(iterator->position + (iterator->velocity*timeStep));
+			if (!iterator->fixed)
+				iterator->position = (Vec3)(iterator->position + (iterator->velocity*timeStep));
 		}
 		//3.Velocity changes by forces
 		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
@@ -327,7 +328,8 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep) {
 		//5.Movement by velocity
 		i = 0;
 		for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
-			iterator->position = xarray[i++] + (iterator->velocity*timeStep);
+			if (!iterator->fixed)
+				iterator->position = xarray[i++] + (iterator->velocity*timeStep);
 		}
 		//6.Velocity changes by forces
 		i = 0;
@@ -431,6 +433,7 @@ int MassSpringSystemSimulator::addMassPointToVector(Vec3 position, Vec3 Velocity
 	p.mass = m_fMass;
 	p.damping = 0;
 	p.force = Vec3(0.0, 0.0, 0.0);
+	p.fixed = isFixed;
 	massVector->push_back(p);
 	return massVector->size() - 1;
 }
