@@ -10,10 +10,10 @@ public:
 
 	Vec3 pos;
 	Vec3 scale;//h,d,w
-	Quaternion rot;
+	Quaternion<float> rot;
 	float mass;
-	matrix4x4 inertia();
-	matrix4x4 master;
+	matrix4x4<float> inertia();
+	matrix4x4<float> master;
 
 
 };
