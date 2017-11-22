@@ -56,7 +56,11 @@ public:
 	Quaternion rot;
 	float mass;
 	matrix4x4 inertia() {
-		return matrix4x4(1 / 12 * mass*(pow(scale.x, 2) + pow(scale.y, 2));
+		return matrix4x4(
+			1 / 12 * mass*(pow(scale.x, 2) + pow(scale.y, 2)), 0, 0, 0,
+			0, 1 / 12 * mass*(pow(scale.z, 2) + pow(scale.y, 2)), 0, 0,
+			0, 0, 1 / 12 * mass*(pow(scale.z, 2) + pow(scale.x, 2)), 0,
+			0, 0, 0, 1);
 
 	};
 	matrix4x4 master;
