@@ -50,7 +50,11 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 		//Rotation calculations
 		it->rot = it->rot + 0.5f * Quaternion<float>(0.0f, it->angVel[0], it->angVel[1], it->angVel[2]) * it->rot;
 		it->angMom = it->angMom + timeStep * torque;
-		//INSERT inverse inertia here
+		matrix4x4<float> invIns = it->rotMat() * it->inverseInertia * it->rotMat().transpose();
+		it->angVel = invIns.transformVector(it->angMom);
+
+		//apply rotation
+		//does it make sense to update position and velocity of every point with rotation?
 	}
 }
 

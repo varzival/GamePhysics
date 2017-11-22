@@ -15,6 +15,7 @@ public:
 	rigidBody();
 	~rigidBody();
 	matrix4x4<float> inertia();
+	matrix4x4<float> inverseInertia();
 	matrix4x4<float> master();
 	matrix4x4<float> transMat();
 	matrix4x4<float> scaleMat();
@@ -27,7 +28,7 @@ public:
 	float mass;
 
 	Vec3 angVel; // angular velocity
-	Vec3 angMom;
+	Vec3 angMom; // angular momentum
 
 	std::vector<Force> forces;
 };
