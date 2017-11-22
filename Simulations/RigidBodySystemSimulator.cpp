@@ -31,6 +31,27 @@ void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 
 void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 {
+	for (std::vector<rigidBody>::iterator it = rigidBodies.begin(); it != rigidBodies.end; it++)
+	{
+		Vec3 totalForce(0.0f, 0.0f, 0.0f);
+		Vec3 torque(0.0f, 0.0f, 0.0f);
+		for (std::vector<Force>::iterator itforce = it->forces.begin(); itforce != it->forces.end(); itforce++)
+		{
+			Force f = *itforce;
+			totalForce = totalForce + f.forceDir;
+			Vec3 vecToPoint = f.forcePos - it->pos;
+			torque = torque += cross(vecToPoint, f.forceDir);
+		}
+
+		//Standard Euler Step
+		it->pos = it->pos + timeStep * it->vel;
+		it->vel = timeStep * (totalForce / it->mass);
+
+		//Rotation calculations
+		it->rot = it->rot + 0.5f * Quaternion<float>(0.0f, it->angVel[0], it->angVel[1], it->angVel[2]) * it->rot;
+		it->angMom = it->angMom + timeStep * torque;
+		//INSERT inverse inertia here
+	}
 }
 
 void RigidBodySystemSimulator::onClick(int x, int y)

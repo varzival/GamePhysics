@@ -3,6 +3,7 @@
 #include "Simulator.h"
 #include "matrixbase.h"
 #include "quaternion.h"
+#include "rigidBody.h"
 
 //add your header for your rigid body system, for e.g.,
 //#include "rigidBodySystem.h" 
@@ -45,6 +46,8 @@ private:
 	Point2D m_mouse;
 	Point2D m_trackmouse;
 	Point2D m_oldtrackmouse;
+
+	vector<rigidBody> rigidBodies;
 };
 #endif
 
