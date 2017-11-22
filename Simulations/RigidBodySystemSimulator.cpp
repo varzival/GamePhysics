@@ -2,6 +2,8 @@
 
 RigidBodySystemSimulator::RigidBodySystemSimulator()
 {
+	//basic setup
+	addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
 }
 
 const char * RigidBodySystemSimulator::getTestCasesStr()
@@ -11,6 +13,7 @@ const char * RigidBodySystemSimulator::getTestCasesStr()
 
 void RigidBodySystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
+	this->DUC = DUC;
 }
 
 void RigidBodySystemSimulator::reset()
@@ -19,6 +22,12 @@ void RigidBodySystemSimulator::reset()
 
 void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContext)
 {
+	for (std::vector<rigidBody>::iterator it = rigidBodies.begin(); it != rigidBodies.end(); it++)
+	{
+		DUC->setUpLighting(Vec3(), Vec3(1.0f, 1.0f, 1.0f), 0.1, BOXCOLOR);
+		DUC->drawRigidBody(it->worldMat().toDirectXMatrix());
+	}
+
 }
 
 void RigidBodySystemSimulator::notifyCaseChanged(int testCase)
@@ -31,7 +40,7 @@ void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 
 void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 {
-	for (std::vector<rigidBody>::iterator it = rigidBodies.begin(); it != rigidBodies.end; it++)
+	for (std::vector<rigidBody>::iterator it = rigidBodies.begin(); it != rigidBodies.end(); it++)
 	{
 		Vec3 totalForce(0.0f, 0.0f, 0.0f);
 		Vec3 torque(0.0f, 0.0f, 0.0f);
@@ -50,7 +59,13 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 		//Rotation calculations
 		it->rot = it->rot + 0.5f * Quaternion<float>(0.0f, it->angVel[0], it->angVel[1], it->angVel[2]) * it->rot;
 		it->angMom = it->angMom + timeStep * torque;
-		matrix4x4<float> invIns = it->rotMat() * it->inverseInertia * it->rotMat().transpose();
+		
+		matrix4x4<float> rotMat = it->rotMat();
+		matrix4x4<float> invIns = rotMat * it->inverseInertia();
+		rotMat.transpose();
+		invIns = invIns * rotMat;
+		//rotMat.transpose(); transpose back
+
 		it->angVel = invIns.transformVector(it->angMom);
 
 		//apply rotation
@@ -92,6 +107,11 @@ void RigidBodySystemSimulator::applyForceOnBody(int i, Vec3 loc, Vec3 force)
 
 void RigidBodySystemSimulator::addRigidBody(Vec3 position, Vec3 size, int mass)
 {
+	rigidBody rb;
+	rb.pos = position;
+	rb.scale = size;
+	rb.mass = mass;
+	rigidBodies.push_back(rb);
 }
 
 void RigidBodySystemSimulator::setOrientationOf(int i, Quat orientation)

@@ -8,6 +8,7 @@
 
 #ifndef MATRICES_H
 
+using namespace DirectX;
 
 namespace GamePhysics {
 

@@ -16,7 +16,7 @@ public:
 	~rigidBody();
 	matrix4x4<float> inertia();
 	matrix4x4<float> inverseInertia();
-	matrix4x4<float> master();
+	matrix4x4<float> worldMat();
 	matrix4x4<float> transMat();
 	matrix4x4<float> scaleMat();
 	matrix4x4<float> rotMat();

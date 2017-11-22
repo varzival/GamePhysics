@@ -10,6 +10,8 @@
 
 #define TESTCASEUSEDTORUNTEST 2
 
+#define BOXCOLOR Vec3(0.0f, 1.0f, 0.0f)
+
 class RigidBodySystemSimulator :public Simulator {
 public:
 	// Construtors

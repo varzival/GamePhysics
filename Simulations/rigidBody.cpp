@@ -59,7 +59,7 @@ matrix4x4<float> rigidBody::inverseInertia()
 		0, 0, 0, 1.0f);
 }
 
-matrix4x4<float> rigidBody::master()
+matrix4x4<float> rigidBody::worldMat()
 {
 	return scaleMat()*rotMat()*transMat();
 }
