@@ -2,6 +2,7 @@
 #define RIGIDBODYSYSTEMSIMULATOR_h
 #include "Simulator.h"
 #include "matrixbase.h"
+#include "quaternion.h"
 
 //add your header for your rigid body system, for e.g.,
 //#include "rigidBodySystem.h" 
@@ -46,12 +47,18 @@ private:
 	Point2D m_oldtrackmouse;
 };
 #endif
+//Bastis Area
 class Rigidbody {
 public:
 
 	Vec3 pos;
+	Vec3 scale;//h,d,w
+	Quaternion rot;
+	float mass;
+	matrix4x4 inertia() {
+		return matrix4x4(1 / 12 * mass*(pow(scale.x, 2) + pow(scale.y, 2));
 
-
+	};
 	matrix4x4 master;
 
 };
