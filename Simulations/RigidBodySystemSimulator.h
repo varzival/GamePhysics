@@ -1,16 +1,19 @@
 #ifndef RIGIDBODYSYSTEMSIMULATOR_h
 #define RIGIDBODYSYSTEMSIMULATOR_h
 #include "Simulator.h"
+#include "matrixbase.h"
+#include "quaternion.h"
+
 //add your header for your rigid body system, for e.g.,
 //#include "rigidBodySystem.h" 
 
 #define TESTCASEUSEDTORUNTEST 2
 
-class RigidBodySystemSimulator:public Simulator{
+class RigidBodySystemSimulator :public Simulator {
 public:
 	// Construtors
 	RigidBodySystemSimulator();
-	
+
 	// Functions
 	const char * getTestCasesStr();
 	void initUI(DrawingUtilitiesClass * DUC);
@@ -29,7 +32,7 @@ public:
 	Vec3 getAngularVelocityOfRigidBody(int i);
 	void applyForceOnBody(int i, Vec3 loc, Vec3 force);
 	void addRigidBody(Vec3 position, Vec3 size, int mass);
-	void setOrientationOf(int i,Quat orientation);
+	void setOrientationOf(int i, Quat orientation);
 	void setVelocityOf(int i, Vec3 velocity);
 
 private:
@@ -42,5 +45,20 @@ private:
 	Point2D m_mouse;
 	Point2D m_trackmouse;
 	Point2D m_oldtrackmouse;
-	};
+};
 #endif
+//Bastis Area
+class Rigidbody {
+public:
+
+	Vec3 pos;
+	Vec3 scale;//h,d,w
+	Quaternion rot;
+	float mass;
+	matrix4x4 inertia() {
+		return matrix4x4(1 / 12 * mass*(pow(scale.x, 2) + pow(scale.y, 2));
+
+	};
+	matrix4x4 master;
+
+};
