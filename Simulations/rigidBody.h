@@ -1,6 +1,7 @@
 #pragma once
 #include "matrixbase.h"
 #include "quaternion.h"
+#include <vector>
 using namespace GamePhysics;
 
 struct Force {
@@ -14,14 +15,16 @@ public:
 	rigidBody();
 	~rigidBody();
 	matrix4x4<float> inertia();
+	matrix4x4<float> master();
+	matrix4x4<float> transMat();
+	matrix4x4<float> scaleMat();
+	matrix4x4<float> rotMat();
 
 	Vec3 pos; //Position of center of mass
 	Vec3 vel; //Velocity of center of mass
 	Vec3 scale;//h,d,w
 	Quaternion<float> rot;
 	float mass;
-	matrix4x4<float> inertia();
-	matrix4x4<float> master;
 
 	Vec3 angVel; // angular velocity
 	Vec3 angMom;
