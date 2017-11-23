@@ -57,11 +57,11 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 		it->vel = timeStep * (totalForce / it->mass);
 
 		//Rotation calculations
-		it->rot = it->rot + 0.5f * Quaternion<float>(0.0f, it->angVel[0], it->angVel[1], it->angVel[2]) * it->rot;
+		it->rot = it->rot + 0.5f * Quat(0.0f, it->angVel[0], it->angVel[1], it->angVel[2]) * it->rot;
 		it->angMom = it->angMom + timeStep * torque;
 		
-		matrix4x4<float> rotMat = it->rotMat();
-		matrix4x4<float> invIns = rotMat * it->inverseInertia();
+		matrix4x4<Real> rotMat = it->rotMat();
+		matrix4x4<Real> invIns = rotMat * it->inverseInertia();
 		rotMat.transpose();
 		invIns = invIns * rotMat;
 		//rotMat.transpose(); transpose back
@@ -83,26 +83,27 @@ void RigidBodySystemSimulator::onMouse(int x, int y)
 
 int RigidBodySystemSimulator::getNumberOfRigidBodies()
 {
-	return 0;
+	return rigidBodies.size();
 }
 
 Vec3 RigidBodySystemSimulator::getPositionOfRigidBody(int i)
 {
-	return Vec3();
+	return rigidBodies[i].pos;
 }
 
 Vec3 RigidBodySystemSimulator::getLinearVelocityOfRigidBody(int i)
 {
-	return Vec3();
+	return rigidBodies[i].vel;
 }
 
 Vec3 RigidBodySystemSimulator::getAngularVelocityOfRigidBody(int i)
 {
-	return Vec3();
+	return rigidBodies[i].angVel;
 }
 
 void RigidBodySystemSimulator::applyForceOnBody(int i, Vec3 loc, Vec3 force)
 {
+
 }
 
 void RigidBodySystemSimulator::addRigidBody(Vec3 position, Vec3 size, int mass)
@@ -116,8 +117,10 @@ void RigidBodySystemSimulator::addRigidBody(Vec3 position, Vec3 size, int mass)
 
 void RigidBodySystemSimulator::setOrientationOf(int i, Quat orientation)
 {
+	rigidBodies[i].rot = orientation;
 }
 
 void RigidBodySystemSimulator::setVelocityOf(int i, Vec3 velocity)
 {
+	rigidBodies[i].vel = velocity;
 }

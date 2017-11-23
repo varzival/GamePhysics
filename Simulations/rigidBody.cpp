@@ -9,7 +9,7 @@ rigidBody::rigidBody()
 	angMom = Vec3(0.0f, 0.0f, 0.0f);
 	scale = Vec3(1.0f, 1.0f, 1.0f);
 	mass = 1.0f;
-	rot = Quaternion<float>(0.0f, 0.0f, 0.0f, 1.0f); //no rotation
+	rot = Quat(0.0f, 0.0f, 0.0f, 1.0f); //no rotation
 }
 
 
@@ -17,32 +17,32 @@ rigidBody::~rigidBody()
 {
 }
 
-matrix4x4<float> rigidBody::transMat()
+matrix4x4<Real> rigidBody::transMat()
 {
-	return matrix4x4<float>(
+	return matrix4x4<Real>(
 		1, 0, 0, pos.x,
 		0, 1, 0, pos.y,
 		0, 0, 1, pos.z,
 		0, 0, 0, 1);
 }
 
-matrix4x4<float> rigidBody::scaleMat()
+matrix4x4<Real> rigidBody::scaleMat()
 {
-	return matrix4x4<float>(
+	return matrix4x4<Real>(
 		scale.x, 0, 0, 0,
 		0, scale.y, 0, 0,
 		0, 0, scale.z, 0,
 		0, 0, 0, 1);
 }
 
-matrix4x4<float> rigidBody::rotMat()
+matrix4x4<Real> rigidBody::rotMat()
 {
 	return rot.getRotMat();
 }
 
-matrix4x4<float> rigidBody::inertia()
+matrix4x4<Real> rigidBody::inertia()
 {
-	return matrix4x4<float>(
+	return matrix4x4<Real>(
 		1.0f / 12.0f * mass*(pow(scale.x, 2) + pow(scale.y, 2)), 0, 0, 0,
 		0, 1.0f / 12.0f * mass*(pow(scale.z, 2) + pow(scale.y, 2)), 0, 0,
 		0, 0, 1.0f / 12.0f * mass*(pow(scale.z, 2) + pow(scale.x, 2)), 0,
@@ -50,16 +50,16 @@ matrix4x4<float> rigidBody::inertia()
 
 }
 
-matrix4x4<float> rigidBody::inverseInertia()
+matrix4x4<Real> rigidBody::inverseInertia()
 {
-	return matrix4x4<float>(
+	return matrix4x4<Real>(
 		1.0f / (1.0f / 12.0f * mass*(pow(scale.x, 2) + pow(scale.y, 2))), 0, 0, 0,
 		0, 1.0f / (1.0f / 12.0f * mass*(pow(scale.z, 2) + pow(scale.y, 2))), 0, 0,
 		0, 0, 1.0f / (1.0f / 12.0f * mass*(pow(scale.z, 2) + pow(scale.x, 2))), 0,
 		0, 0, 0, 1.0f);
 }
 
-matrix4x4<float> rigidBody::worldMat()
+matrix4x4<Real> rigidBody::worldMat()
 {
 	return scaleMat()*rotMat()*transMat();
 }
