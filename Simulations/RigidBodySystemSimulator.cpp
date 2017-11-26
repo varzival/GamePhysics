@@ -4,6 +4,8 @@ RigidBodySystemSimulator::RigidBodySystemSimulator()
 {
 	//basic setup
 	addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
+	Quat deg90 = Quat(Vec3(0, 0, 1), M_PI/2.0);
+	rigidBodies[0].rot = deg90;
 }
 
 const char * RigidBodySystemSimulator::getTestCasesStr()
@@ -44,12 +46,13 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 	{
 		Vec3 totalForce(0.0f, 0.0f, 0.0f);
 		Vec3 torque(0.0f, 0.0f, 0.0f);
-		for (std::vector<Force>::iterator itforce = it->forces.begin(); itforce != it->forces.end(); itforce++)
+		for (std::vector<Force>::iterator itforce = it->forces.begin(); itforce != it->forces.end();)
 		{
 			Force f = *itforce;
 			totalForce = totalForce + f.forceDir;
 			Vec3 vecToPoint = f.forcePos - it->pos;
 			torque = torque += cross(vecToPoint, f.forceDir);
+			itforce = it->forces.erase(itforce);
 		}
 
 		//Standard Euler Step
