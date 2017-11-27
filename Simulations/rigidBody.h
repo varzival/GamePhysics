@@ -30,6 +30,7 @@ public:
 	Vec3 angVel; // angular velocity
 	Vec3 angMom; // angular momentum
 
-	std::vector<Force> forces;
+	Vec3 totalForce;
+	Vec3 torque;
 };
 

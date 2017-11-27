@@ -5,7 +5,8 @@ RigidBodySystemSimulator::RigidBodySystemSimulator()
 	//basic setup
 	addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
 	Quat deg90 = Quat(Vec3(0, 0, 1), M_PI/2.0);
-	rigidBodies[0].rot = deg90;
+	setOrientationOf(0, deg90);
+	applyForceOnBody(0, Vec3(0.3, 0.5, 0.25), Vec3(1, 1, 0));
 }
 
 const char * RigidBodySystemSimulator::getTestCasesStr()
@@ -27,7 +28,7 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 	for (std::vector<rigidBody>::iterator it = rigidBodies.begin(); it != rigidBodies.end(); it++)
 	{
 		DUC->setUpLighting(Vec3(), Vec3(1.0f, 1.0f, 1.0f), 0.1, BOXCOLOR);
-		DUC->drawRigidBody(it->worldMat().toDirectXMatrix());
+		DUC->drawRigidBody(it->worldMat());
 	}
 
 }
@@ -44,25 +45,16 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 {
 	for (std::vector<rigidBody>::iterator it = rigidBodies.begin(); it != rigidBodies.end(); it++)
 	{
-		Vec3 totalForce(0.0f, 0.0f, 0.0f);
-		Vec3 torque(0.0f, 0.0f, 0.0f);
-		for (std::vector<Force>::iterator itforce = it->forces.begin(); itforce != it->forces.end();)
-		{
-			Force f = *itforce;
-			totalForce = totalForce + f.forceDir;
-			Vec3 vecToPoint = f.forcePos - it->pos;
-			torque = torque += cross(vecToPoint, f.forceDir);
-			itforce = it->forces.erase(itforce);
-		}
-
 		//Standard Euler Step
 		it->pos = it->pos + timeStep * it->vel;
-		it->vel = timeStep * (totalForce / it->mass);
+		it->vel = it->vel + timeStep * (it->totalForce / it->mass);
 
 		//Rotation calculations
-		it->rot = it->rot + 0.5f * Quat(0.0f, it->angVel[0], it->angVel[1], it->angVel[2]) * it->rot;
-		it->angMom = it->angMom + timeStep * torque;
+		it->rot = it->rot + 0.5f * Quat(it->angVel[0], it->angVel[1], it->angVel[2], 0.0f) * it->rot;
+		it->angMom = it->angMom + timeStep * it->torque;
 		
+
+		//Inertia
 		matrix4x4<Real> rotMat = it->rotMat();
 		matrix4x4<Real> invIns = rotMat * it->inverseInertia();
 		rotMat.transpose();
@@ -73,6 +65,10 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 
 		//apply rotation
 		//does it make sense to update position and velocity of every point with rotation?
+
+		//reset force and torque
+		it->totalForce = Vec3(0.0f, 0.0f, 0.0f);
+		it->torque = Vec3(0.0f, 0.0f, 0.0f);
 	}
 }
 
@@ -106,7 +102,10 @@ Vec3 RigidBodySystemSimulator::getAngularVelocityOfRigidBody(int i)
 
 void RigidBodySystemSimulator::applyForceOnBody(int i, Vec3 loc, Vec3 force)
 {
-
+	rigidBody* rbp = &rigidBodies.at(i);
+	rbp->totalForce = rbp->totalForce + force;
+	Vec3 vecToPoint = loc - rbp->pos;
+	rbp->torque = rbp->torque + cross(vecToPoint, force);
 }
 
 void RigidBodySystemSimulator::addRigidBody(Vec3 position, Vec3 size, int mass)

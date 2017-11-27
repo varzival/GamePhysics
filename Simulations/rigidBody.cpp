@@ -19,20 +19,24 @@ rigidBody::~rigidBody()
 
 matrix4x4<Real> rigidBody::transMat()
 {
-	return matrix4x4<Real>(
+	matrix4x4<Real> m = matrix4x4<Real>(
 		1, 0, 0, pos.x,
 		0, 1, 0, pos.y,
 		0, 0, 1, pos.z,
 		0, 0, 0, 1);
+	m.transpose();
+	return m;
 }
 
 matrix4x4<Real> rigidBody::scaleMat()
 {
-	return matrix4x4<Real>(
+	matrix4x4<Real> m = matrix4x4<Real>(
 		scale.x, 0, 0, 0,
 		0, scale.y, 0, 0,
 		0, 0, scale.z, 0,
 		0, 0, 0, 1);
+	m.transpose();
+	return m;
 }
 
 matrix4x4<Real> rigidBody::rotMat()
@@ -42,21 +46,25 @@ matrix4x4<Real> rigidBody::rotMat()
 
 matrix4x4<Real> rigidBody::inertia()
 {
-	return matrix4x4<Real>(
+	matrix4x4<Real> m = matrix4x4<Real>(
 		1.0f / 12.0f * mass*(pow(scale.x, 2) + pow(scale.y, 2)), 0, 0, 0,
 		0, 1.0f / 12.0f * mass*(pow(scale.z, 2) + pow(scale.y, 2)), 0, 0,
 		0, 0, 1.0f / 12.0f * mass*(pow(scale.z, 2) + pow(scale.x, 2)), 0,
 		0, 0, 0, 1);
+	m.transpose();
+	return m;
 
 }
 
 matrix4x4<Real> rigidBody::inverseInertia()
 {
-	return matrix4x4<Real>(
+	matrix4x4<Real> m = matrix4x4<Real>(
 		1.0f / (1.0f / 12.0f * mass*(pow(scale.x, 2) + pow(scale.y, 2))), 0, 0, 0,
 		0, 1.0f / (1.0f / 12.0f * mass*(pow(scale.z, 2) + pow(scale.y, 2))), 0, 0,
 		0, 0, 1.0f / (1.0f / 12.0f * mass*(pow(scale.z, 2) + pow(scale.x, 2))), 0,
 		0, 0, 0, 1.0f);
+	m.transpose();
+	return m;
 }
 
 matrix4x4<Real> rigidBody::worldMat()
