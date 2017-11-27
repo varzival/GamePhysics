@@ -11,6 +11,17 @@
 #define TESTCASEUSEDTORUNTEST 2
 
 #define BOXCOLOR Vec3(0.0f, 1.0f, 0.0f)
+#define FORCEPOINTCOLOR Vec3(0.0f, 0.0f, 1.0f)
+#define FORCELINECOLOR Vec3(1.0f, 1.0f, 0.0f)
+
+#define FORCEPOINTRADIUS 0.05f
+#define FORCETTL 3.0f
+
+struct ForceVisual
+{
+	Force force;
+	float ttl;
+};
 
 class RigidBodySystemSimulator :public Simulator {
 public:
@@ -50,6 +61,9 @@ private:
 	Point2D m_oldtrackmouse;
 
 	vector<rigidBody> rigidBodies;
+	//visualize forces
+	bool m_forceVisalsOn;
+	vector<ForceVisual> forceVisuals;
 };
 #endif
 

@@ -2,6 +2,8 @@
 
 RigidBodySystemSimulator::RigidBodySystemSimulator()
 {
+	m_forceVisalsOn = true;
+
 	//basic setup
 	addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
 	Quat deg90 = Quat(Vec3(0, 0, 1), M_PI/2.0);
@@ -17,6 +19,7 @@ const char * RigidBodySystemSimulator::getTestCasesStr()
 void RigidBodySystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
 	this->DUC = DUC;
+	TwAddVarRW(DUC->g_pTweakBar, "Visualize Forces", TW_TYPE_BOOLCPP, &m_forceVisalsOn, "");
 }
 
 void RigidBodySystemSimulator::reset()
@@ -31,6 +34,19 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 		DUC->drawRigidBody(it->worldMat());
 	}
 
+	//visualize forces
+	if (m_forceVisalsOn)
+	{
+		for (std::vector<ForceVisual>::iterator it = forceVisuals.begin(); it != forceVisuals.end(); it++)
+		{
+			DUC->setUpLighting(Vec3(), Vec3(1.0f, 1.0f, 1.0f), 0.1, FORCEPOINTCOLOR);
+			DUC->drawSphere(it->force.forcePos, FORCEPOINTRADIUS);
+			DUC->setUpLighting(Vec3(), Vec3(1.0f, 1.0f, 1.0f), 0.1, FORCELINECOLOR);
+			DUC->beginLine();
+			DUC->drawLine(it->force.forcePos, FORCELINECOLOR, it->force.forcePos + it->force.forceDir, FORCELINECOLOR);
+			DUC->endLine();
+		}
+	}
 }
 
 void RigidBodySystemSimulator::notifyCaseChanged(int testCase)
@@ -39,6 +55,20 @@ void RigidBodySystemSimulator::notifyCaseChanged(int testCase)
 
 void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 {
+	for (std::vector<ForceVisual>::iterator it = forceVisuals.begin(); it != forceVisuals.end();)
+	{
+		it->ttl -= timeElapsed;
+		if (it->ttl < 0.0f)
+		{
+			it = forceVisuals.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
+
+
 }
 
 void RigidBodySystemSimulator::simulateTimestep(float timeStep)
@@ -106,6 +136,11 @@ void RigidBodySystemSimulator::applyForceOnBody(int i, Vec3 loc, Vec3 force)
 	rbp->totalForce = rbp->totalForce + force;
 	Vec3 vecToPoint = loc - rbp->pos;
 	rbp->torque = rbp->torque + cross(vecToPoint, force);
+
+	//visualize
+	Force f = { loc, force };
+	ForceVisual fv = { f, FORCETTL };
+	forceVisuals.push_back(fv);
 }
 
 void RigidBodySystemSimulator::addRigidBody(Vec3 position, Vec3 size, int mass)
