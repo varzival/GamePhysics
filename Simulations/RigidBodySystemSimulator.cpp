@@ -153,10 +153,14 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 						//Boxes are colliding
 						else if (end < 0.0)
 						{
-							//TODO
+							//probably take this formula: http://www.euclideanspace.com/physics/dynamics/collision/threed/index.htm
+							//cause game physics slides really suck
+
 							//Impuls berechnen
-							Vec3 p1 = (it->inverseInertia()*(cross(info.collisionPointWorld/* nicht sicher ob das xa ist*/, info.normalWorld)) * info.collisionPointWorld);
-							Vec3 p2 = (it2->inverseInertia()*(cross(info.collisionPointWorld/* nicht sicher ob das xa ist*/, info.normalWorld)) * info.collisionPointWorld);
+							Vec3 r_a = info.collisionPointWorld - it->pos;
+							Vec3 r_b = info.collisionPointWorld - it2->pos;
+							Vec3 p1 = (it->inverseInertia()*(cross(r_a, info.normalWorld)) * info.collisionPointWorld);
+							Vec3 p2 = (it2->inverseInertia()*(cross(r_b, info.normalWorld)) * info.collisionPointWorld);
 							Vec3 j = (-1 * out)/(1.0/it->mass + 1.0/it2->mass + dot((p1 + p2), info.normalWorld));
 							it->vel = it->vel + j/it->mass;
 							it2->vel = it2->vel - j/it->mass;
