@@ -43,7 +43,7 @@ void RigidBodySystemSimulator::loadDemo()
 		setOrientationOf(0, deg90);
 		applyForceOnBody(0, Vec3(0.3, 0.5, 0.25), Vec3(1, 1, 0));
 		oldDemoChoice = 0;
-		*timeStep = 0.001f;
+		*timeStep = 2.0f;
 		break;
 	case 1:
 		addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
@@ -142,7 +142,7 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 					{
 						//Relative Velocity ausrechnen
 						Vec3 relVel = (it->vel) - (it2->vel);
-						Vec3 out = (relVel * info.normalWorld);
+						Vec3 out = dot(relVel, info.normalWorld);
 						double end = out.x + out.y + out.z;
 						//Boxes are seperating
 						if (end > 0.0)
@@ -157,12 +157,12 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 							//Impuls berechnen
 							Vec3 p1 = (it->inverseInertia()*(cross(info.collisionPointWorld/* nicht sicher ob das xa ist*/, info.normalWorld)) * info.collisionPointWorld);
 							Vec3 p2 = (it2->inverseInertia()*(cross(info.collisionPointWorld/* nicht sicher ob das xa ist*/, info.normalWorld)) * info.collisionPointWorld);
-							double j = (-1 * end)/(1/it->mass + 1/it2->mass + dot((p1 + p2), info.normalWorld));
-							it->vel = it->vel + j*info.normalWorld/it->mass;
-							it2->vel = it2->vel - j*info.normalWorld / it->mass;
+							Vec3 j = (-1 * out)/(1.0/it->mass + 1.0/it2->mass + dot((p1 + p2), info.normalWorld));
+							it->vel = it->vel + j/it->mass;
+							it2->vel = it2->vel - j/it->mass;
 
-							it->angMom = it->angMom + (cross(info.collisionPointWorld,(j*info.normalWorld)));
-							it2->angMom = it2->angMom - (cross(info.collisionPointWorld, (j*info.normalWorld)));
+							it->angMom = it->angMom + (cross(info.collisionPointWorld, j));
+							it2->angMom = it2->angMom - (cross(info.collisionPointWorld, j));
 							cout << "Boxes are colliding\n";
 						}
 						else
