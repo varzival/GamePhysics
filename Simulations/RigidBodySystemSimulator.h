@@ -4,6 +4,7 @@
 #include "matrixbase.h"
 #include "quaternion.h"
 #include "rigidBody.h"
+#include "collisionDetect.h"
 
 //add your header for your rigid body system, for e.g.,
 //#include "rigidBodySystem.h" 

@@ -22,8 +22,6 @@ void RigidBodySystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 	TwAddVarRW(DUC->g_pTweakBar, "Visualize Forces", TW_TYPE_BOOLCPP, &m_forceVisalsOn, "");
 	TwType TW_TYPE_TESTCASE = TwDefineEnumFromString("Demo", "Demo1, Demo2, Demo3, Demo4");
 	TwAddVarRW(DUC->g_pTweakBar, "Demo", TW_TYPE_TESTCASE, &demoChoice, "");
-	//Startwert
-	demoChoice = 0;
 }
 
 void RigidBodySystemSimulator::reset()
@@ -59,12 +57,14 @@ void RigidBodySystemSimulator::loadDemo()
 		*timeStep = 0.001f;
 		//Quader1
 		addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
-		deg90 = Quat(Vec3(0, 1, 0), M_PI / 2.0);
+		deg90 = Quat(Vec3(0.2, 1, 0), M_PI / 2.0);
 		setOrientationOf(0, deg90);
+		setVelocityOf(0, Vec3(0, 0.1, 0));
 		//Quader2
 		addRigidBody(Vec3(0, 1, 0), Vec3(1, 0.6, 0.5), 2);
 		deg90 = Quat(Vec3(0, 1, 0), M_PI / 2.0);
 		setOrientationOf(1, deg90);
+		setVelocityOf(1, Vec3(0, -0.1, 0));
 		break;
 	case 3:
 		*timeStep = 0.001f;
@@ -117,10 +117,32 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 			DUC->endLine();
 		}
 	}
+	//Falls der Nutzer die Demo aendert wechseln
 	if (oldDemoChoice != demoChoice)
 	{
 		loadDemo();
 	}
+	CollisionInfo info;
+	for (std::vector<rigidBody>::iterator it = rigidBodies.begin(); it != rigidBodies.end(); it++)
+	{
+		if (rigidBodies.begin() != rigidBodies.end())//Sicherstellen das es mehr als 1 Rigidbody gibt
+		{			
+			//It mit allen anderen auf Kollisionen pruefen
+			for (std::vector<rigidBody>::iterator it2 = rigidBodies.begin(); it2 != rigidBodies.end(); it2++)
+			{
+				if (it != it2)//Nicht mit sich selbst prüfen
+				{
+					info = checkCollisionSAT(it->worldMat(), it2->worldMat());
+					if (info.isValid)
+					{
+						//Kollision erkannt einfluss hier berechnen
+						cout << "Valid Collision\n";
+					}
+				}
+			}
+		}
+	}
+
 }
 void RigidBodySystemSimulator::notifyCaseChanged(int testCase)
 {
