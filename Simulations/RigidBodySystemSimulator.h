@@ -25,6 +25,7 @@ struct ForceVisual
 
 class RigidBodySystemSimulator :public Simulator {
 public:
+	float * timeStep;
 	// Construtors
 	RigidBodySystemSimulator();
 
@@ -49,6 +50,9 @@ public:
 	void setOrientationOf(int i, Quat orientation);
 	void setVelocityOf(int i, Vec3 velocity);
 
+	//UI
+	void loadDemo();
+
 private:
 	// Attributes
 	// add your RigidBodySystem data members, for e.g.,
@@ -64,6 +68,10 @@ private:
 	//visualize forces
 	bool m_forceVisalsOn;
 	vector<ForceVisual> forceVisuals;
+
+	//Gibt an welche Demo abgespielt werden soll
+	int demoChoice = 0;
+	int oldDemoChoice;
 };
 #endif
 

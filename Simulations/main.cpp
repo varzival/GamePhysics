@@ -370,6 +370,7 @@ int main(int argc, char* argv[])
 #endif
 #ifdef RIGID_BODY_SYSTEM
 	g_pSimulator= new RigidBodySystemSimulator();
+	((RigidBodySystemSimulator*)g_pSimulator)->timeStep = &g_fTimestep; //pass time step variable
 #endif
 #ifdef SPH_SYSTEM
 	//g_pSimulator= new SPHSystemSimulator();

@@ -20,10 +20,80 @@ void RigidBodySystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
 	this->DUC = DUC;
 	TwAddVarRW(DUC->g_pTweakBar, "Visualize Forces", TW_TYPE_BOOLCPP, &m_forceVisalsOn, "");
+	TwType TW_TYPE_TESTCASE = TwDefineEnumFromString("Demo", "Demo1, Demo2, Demo3, Demo4");
+	TwAddVarRW(DUC->g_pTweakBar, "Demo", TW_TYPE_TESTCASE, &demoChoice, "");
+	//Startwert
+	demoChoice = 0;
 }
 
 void RigidBodySystemSimulator::reset()
 {
+	loadDemo();
+}
+
+void RigidBodySystemSimulator::loadDemo()
+{
+	rigidBodies.clear();
+	Quat deg90;
+	cout << "load Demo " << demoChoice << "\n";
+	switch(demoChoice)
+	{
+	case 0:
+		addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
+		 deg90 = Quat(Vec3(0, 0, 1), M_PI / 2.0);
+		setOrientationOf(0, deg90);
+		applyForceOnBody(0, Vec3(0.3, 0.5, 0.25), Vec3(1, 1, 0));
+		oldDemoChoice = 0;
+		*timeStep = 0.001f;
+		break;
+	case 1:
+		addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
+		deg90 = Quat(Vec3(0, 0, 1), M_PI / 2.0);
+		setOrientationOf(0, deg90);
+		applyForceOnBody(0, Vec3(0.3, 0.5, 0.25), Vec3(1, 1, 0));
+		oldDemoChoice = 1;
+		*timeStep = 0.01f;
+		break;
+	case 2:
+		oldDemoChoice = 2;
+		*timeStep = 0.001f;
+		//Quader1
+		addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
+		deg90 = Quat(Vec3(0, 1, 0), M_PI / 2.0);
+		setOrientationOf(0, deg90);
+		//Quader2
+		addRigidBody(Vec3(0, 1, 0), Vec3(1, 0.6, 0.5), 2);
+		deg90 = Quat(Vec3(0, 1, 0), M_PI / 2.0);
+		setOrientationOf(1, deg90);
+		break;
+	case 3:
+		*timeStep = 0.001f;
+		oldDemoChoice = 3;
+		//Quader1
+		addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
+		deg90 = Quat(Vec3(0, 1, 0), M_PI / 2.0);
+		setOrientationOf(0, deg90);
+		//Quader2
+		addRigidBody(Vec3(0, 1, 0), Vec3(1, 0.6, 0.5), 2);
+		deg90 = Quat(Vec3(0, 1, 0), M_PI / 2.0);
+		setOrientationOf(1, deg90);
+		//Quader3
+		addRigidBody(Vec3(1, 0, 0), Vec3(1, 0.6, 0.5), 2);
+		deg90 = Quat(Vec3(0, 1, 0), M_PI / 2.0);
+		setOrientationOf(1, deg90);
+		//Quader4
+		addRigidBody(Vec3(0, 0, 1), Vec3(1, 0.6, 0.5), 2);
+		deg90 = Quat(Vec3(0, 1, 0), M_PI / 2.0);
+		setOrientationOf(1, deg90);
+		break;
+	default:
+		addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
+		deg90 = Quat(Vec3(0, 0, 1), M_PI / 2.0);
+		setOrientationOf(0, deg90);
+		applyForceOnBody(0, Vec3(0.3, 0.5, 0.25), Vec3(1, 1, 0));
+		oldDemoChoice = 0;
+		break;
+	}
 }
 
 void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContext)
@@ -46,6 +116,11 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 			DUC->drawLine(it->force.forcePos, FORCELINECOLOR, it->force.forcePos + it->force.forceDir, FORCELINECOLOR);
 			DUC->endLine();
 		}
+	}
+	if (oldDemoChoice != demoChoice)
+	{
+
+		loadDemo();
 	}
 }
 
@@ -131,6 +206,7 @@ void RigidBodySystemSimulator::onClick(int x, int y)
 	//Wo die Maus zu jedem Moment ist:
 	m_mouse.x = x;
 	m_mouse.y = y;
+
 }
 //andere klicks und mausbewegung
 void RigidBodySystemSimulator::onMouse(int x, int y)
