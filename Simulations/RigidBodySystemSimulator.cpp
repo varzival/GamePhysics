@@ -1,6 +1,12 @@
 #include "RigidBodySystemSimulator.h"
 #include <math.h>
 
+double scalarPorduct(Vec3 i, Vec3 j)
+{
+	Vec3 out = i * j;
+	return out.x + out.y + out.z;
+}
+
 RigidBodySystemSimulator::RigidBodySystemSimulator()
 {
 	m_forceVisalsOn = true;
@@ -150,14 +156,15 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 						else if (end < 0.0)
 						{
 							//TODO
-							//Inertia Tensor berechnen
-							/*matrix4x4<Real> I = matrix4x4<Real>(
-								info.collisionPointWorld.x, 0, 0, 0,
-								0, 1, 0, 0,
-								0, 0, 1, 0,
-								0, 0, 0, 0);
 							//Impuls berechnen
-							double j = (-1 * end)/(1/it->mass + 1/it2->mass + []);*/
+							Vec3 p1 = (it->inverseInertia()*(scalarPorduct(info.normalWorld, info.collisionPointWorld/* nicht sicher ob das xa ist*/)) * info.collisionPointWorld);
+							Vec3 p2 = (it2->inverseInertia()*(scalarPorduct(info.normalWorld, info.collisionPointWorld/* nicht sicher ob das xa ist*/)) * info.collisionPointWorld);
+							double j = (-1 * end)/(1/it->mass + 1/it2->mass + scalarPorduct((p1 + p2), info.normalWorld));
+							it->vel = it->vel + j*info.normalWorld/it->mass;
+							it2->vel = it2->vel - j*info.normalWorld / it->mass;
+
+							//it->angMom = it->angMom + (scalarPorduct(info.collisionPointWorld,(j*info.normalWorld)));
+							//it2->angMom = it2->angMom - (scalarPorduct(info.collisionPointWorld, (j*info.normalWorld)));
 							cout << "Boxes are colliding\n";
 						}
 						else
@@ -173,6 +180,9 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 	}
 
 }
+
+
+
 void RigidBodySystemSimulator::notifyCaseChanged(int testCase)
 {
 	reset();
