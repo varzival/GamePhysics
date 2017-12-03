@@ -99,12 +99,16 @@ void RigidBodySystemSimulator::loadDemo()
 
 void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContext)
 {
-	for (std::vector<rigidBody>::iterator it = rigidBodies.begin(); it != rigidBodies.end(); it++)
-	{
-		DUC->setUpLighting(Vec3(), Vec3(1.0f, 1.0f, 1.0f), 0.1, BOXCOLOR);
-		DUC->drawRigidBody(it->worldMat());
-	}
 
+	if (m_bodyVisualsOn)
+	{
+		for (std::vector<rigidBody>::iterator it = rigidBodies.begin(); it != rigidBodies.end(); it++)
+		{
+			DUC->setUpLighting(Vec3(), Vec3(1.0f, 1.0f, 1.0f), 0.1, BOXCOLOR);
+			DUC->drawRigidBody(it->worldMat());
+		}
+	}
+	
 	//visualize forces
 	if (m_forceVisalsOn)
 	{
@@ -226,10 +230,12 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 		it->vel = it->vel + timeStep * (it->totalForce / it->mass);
 
 		//Rotation calculations
-		it->rot = it->rot + 0.5f * Quat(it->angVel[0], it->angVel[1], it->angVel[2], 0.0f) * it->rot;
+		it->rot = it->rot + timeStep * 0.5 * Quat(it->angVel[0], it->angVel[1], it->angVel[2], 0.0) * it->rot;
+		//renormalize
+		it->rot /= it->rot.norm();
+
 		it->angMom = it->angMom + timeStep * it->torque;
 		
-
 		//Inertia
 		matrix4x4<Real> rotMat = it->rotMat();
 		matrix4x4<Real> invIns = rotMat * it->inverseInertia();
@@ -295,7 +301,7 @@ void RigidBodySystemSimulator::applyForceOnBody(int i, Vec3 loc, Vec3 force)
 {
 	rigidBody* rbp = &rigidBodies.at(i);
 	rbp->totalForce = rbp->totalForce + force;
-	Vec3 vecToPoint = loc - rbp->pos;
+	Vec3 vecToPoint = rbp->pos - loc;
 	rbp->torque = rbp->torque + cross(vecToPoint, force);
 
 	//visualize

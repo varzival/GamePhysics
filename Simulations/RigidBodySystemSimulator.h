@@ -68,6 +68,7 @@ private:
 	vector<rigidBody> rigidBodies;
 	//visualize forces
 	bool m_forceVisalsOn;
+	bool m_bodyVisualsOn;
 	vector<ForceVisual> forceVisuals;
 
 	//Gibt an welche Demo abgespielt werden soll
