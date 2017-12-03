@@ -119,13 +119,12 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 	}
 	if (oldDemoChoice != demoChoice)
 	{
-
 		loadDemo();
 	}
 }
-
 void RigidBodySystemSimulator::notifyCaseChanged(int testCase)
 {
+	reset();
 }
 
 void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
@@ -153,12 +152,12 @@ void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 		Vec3 inputView = Vec3((float)mouseDiff.x, (float)-mouseDiff.y, 0);
 		Vec3 inputWorld = worldViewInv.transformVectorNormal(inputView);
 		// find a proper scale!
-		float inputScale = 0.004f;
+		float inputScale = 0.00004f;
 		inputWorld = inputWorld * inputScale;
 		m_externalForce = inputWorld;
-		for (int i = 0; i < rigidBodies.size(); i++)
+		for (std::vector<rigidBody>::iterator it = rigidBodies.begin(); it != rigidBodies.end(); it++)
 		{
-			applyForceOnBody(i, Vec3(0.f,0.f,0.f),m_externalForce);
+			it->vel += m_externalForce;
 		}
 	}
 	else
