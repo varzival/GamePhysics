@@ -1,4 +1,5 @@
 #include "RigidBodySystemSimulator.h"
+#include <math.h>
 
 RigidBodySystemSimulator::RigidBodySystemSimulator()
 {
@@ -135,8 +136,36 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 					info = checkCollisionSAT(it->worldMat(), it2->worldMat());
 					if (info.isValid)
 					{
+						//Relative Velocity ausrechnen
+						Vec3 relVel = (it->vel) - (it2->vel);
+						Vec3 out = (relVel * info.normalWorld);
+						double end = out.x + out.y + out.z;
+						//Boxes are seperating
+						if (end > 0.0)
+						{
+							//Hier muss man glaub gar nichts machen
+							cout << "Boxes are seperating\n";
+						}
+						//Boxes are colliding
+						else if (end < 0.0)
+						{
+							//TODO
+							//Inertia Tensor berechnen
+							/*matrix4x4<Real> I = matrix4x4<Real>(
+								info.collisionPointWorld.x, 0, 0, 0,
+								0, 1, 0, 0,
+								0, 0, 1, 0,
+								0, 0, 0, 0);
+							//Impuls berechnen
+							double j = (-1 * end)/(1/it->mass + 1/it2->mass + []);*/
+							cout << "Boxes are colliding\n";
+						}
+						else
+						{
+							cout << "Boxes are sliding\n ";
+						}
 						//Kollision erkannt einfluss hier berechnen
-						cout << "Valid Collision\n";
+						
 					}
 				}
 			}
