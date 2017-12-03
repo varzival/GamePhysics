@@ -21,6 +21,8 @@ public:
 	matrix4x4<Real> scaleMat();
 	matrix4x4<Real> rotMat();
 
+	Vec3 pointVelocity(Vec3 point);
+
 	Vec3 pos; //Position of center of mass
 	Vec3 vel; //Velocity of center of mass
 	Vec3 scale;//h,d,w

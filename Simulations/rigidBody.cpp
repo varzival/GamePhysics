@@ -1,5 +1,5 @@
 #include "rigidBody.h"
-
+#include "vectorbase.h"
 
 rigidBody::rigidBody()
 {
@@ -42,6 +42,12 @@ matrix4x4<Real> rigidBody::scaleMat()
 matrix4x4<Real> rigidBody::rotMat()
 {
 	return rot.getRotMat();
+}
+
+Vec3 rigidBody::pointVelocity(Vec3 point)
+{
+	Vec3 midToPoint = point - pos;
+	return vel + cross(angVel, midToPoint);
 }
 
 matrix4x4<Real> rigidBody::inertia()

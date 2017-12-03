@@ -1,6 +1,8 @@
 #include "RigidBodySystemSimulator.h"
 #include <math.h>
 
+#define VELOCITYFACTOR 1.0
+
 RigidBodySystemSimulator::RigidBodySystemSimulator()
 {
 	m_forceVisalsOn = true;
@@ -143,17 +145,20 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 					if (info.isValid)
 					{
 						//Relative Velocity ausrechnen
-						Vec3 relVel = (it->vel) - (it2->vel);
+						Vec3 relVel = (it->pointVelocity(info.collisionPointWorld)) - (it2->pointVelocity(info.collisionPointWorld));
 						Vec3 out = dot(relVel, info.normalWorld);
-						double end = out.x + out.y + out.z;
 						//Boxes are seperating
-						if (end > 0.0)
+						
+						if (out > 0.0)
 						{
 							//Hier muss man glaub gar nichts machen
+							//es kann aber durch die Rotation trotzdem Kollisionen geben, die KÖNNEN wir jedoch nicht berücksichtigen
+							//würde vorschlagen, einen großen Faktor auf die resultat-Velocities zu multiplizieren, damit das einfach nie passiert
 							cout << "Boxes are seperating\n";
 						}
+						
 						//Boxes are colliding
-						else if (end < 0.0)
+						if (out < 0.0)
 						{
 							//probably take this formula: http://www.euclideanspace.com/physics/dynamics/collision/threed/index.htm
 							//cause game physics slides really suck
@@ -164,8 +169,8 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 							Vec3 p1 = (it->inverseInertia()*(cross(r_a, info.normalWorld)) * info.collisionPointWorld);
 							Vec3 p2 = (it2->inverseInertia()*(cross(r_b, info.normalWorld)) * info.collisionPointWorld);
 							Vec3 j = (-1 * out)/(1.0/it->mass + 1.0/it2->mass + dot((p1 + p2), info.normalWorld));
-							it->vel = it->vel + j/it->mass;
-							it2->vel = it2->vel - j/it->mass;
+							it->vel = VELOCITYFACTOR * (it->vel + j/it->mass);
+							it2->vel = VELOCITYFACTOR * (it2->vel - j/it->mass);
 
 							it->angMom = it->angMom + (cross(info.collisionPointWorld, j));
 							it2->angMom = it2->angMom - (cross(info.collisionPointWorld, j));
@@ -173,9 +178,9 @@ void RigidBodySystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateCont
 						}
 						else
 						{
+							//wird nie eintreten, da eine Gleitkommazahl nie genau gleich 0 ist
 							cout << "Boxes are sliding\n ";
 						}
-						//Kollision erkannt einfluss hier berechnen
 						
 					}
 				}
@@ -266,9 +271,7 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 		if (demoChoice == 0 && !demo1Printed)
 		{
 			Vec3 point = Vec3(0.3, 0.5, 0.25);
-			Vec3 midToPoint = point - it->pos;
-			Vec3 worldSpaceVel = it->vel + cross(it->angVel, midToPoint);
-			std::cout << "World Space Velocity of " << point << ": " << worldSpaceVel << "\n";
+			std::cout << "World Space Velocity of " << point << ": " << it->pointVelocity(point) << "\n";
 			std::cout << "Linear Velocity of Body: " << it->vel << "\n";
 			std::cout << "Angular Velocity of Body: " << it->angVel << "\n";
 			demo1Printed = true;
