@@ -74,6 +74,7 @@ private:
 	//Gibt an welche Demo abgespielt werden soll
 	int demoChoice = 0;
 	int oldDemoChoice;
+	bool demo1Printed = false;
 };
 #endif
 

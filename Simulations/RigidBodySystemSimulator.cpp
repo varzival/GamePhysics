@@ -33,6 +33,7 @@ void RigidBodySystemSimulator::reset()
 void RigidBodySystemSimulator::loadDemo()
 {
 	rigidBodies.clear();
+	forceVisuals.clear();
 	Quat deg90;
 	cout << "load Demo " << demoChoice << "\n";
 	switch(demoChoice)
@@ -43,6 +44,7 @@ void RigidBodySystemSimulator::loadDemo()
 		setOrientationOf(0, deg90);
 		applyForceOnBody(0, Vec3(0.3, 0.5, 0.25), Vec3(1, 1, 0));
 		oldDemoChoice = 0;
+		demo1Printed = false;
 		*timeStep = 2.0f;
 		break;
 	case 1:
@@ -249,7 +251,7 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 		matrix4x4<Real> invIns = rotMat * it->inverseInertia();
 		rotMat.transpose();
 		invIns = invIns * rotMat;
-		//rotMat.transpose(); transpose back
+		rotMat.transpose();
 
 		it->angVel = invIns.transformVector(it->angMom);
 
@@ -259,6 +261,18 @@ void RigidBodySystemSimulator::simulateTimestep(float timeStep)
 		//reset force and torque
 		it->totalForce = Vec3(0.0f, 0.0f, 0.0f);
 		it->torque = Vec3(0.0f, 0.0f, 0.0f);
+
+		//print
+		if (demoChoice == 0 && !demo1Printed)
+		{
+			Vec3 point = Vec3(0.3, 0.5, 0.25);
+			Vec3 midToPoint = point - it->pos;
+			Vec3 worldSpaceVel = it->vel + cross(it->angVel, midToPoint);
+			std::cout << "World Space Velocity of " << point << ": " << worldSpaceVel << "\n";
+			std::cout << "Linear Velocity of Body: " << it->vel << "\n";
+			std::cout << "Angular Velocity of Body: " << it->angVel << "\n";
+			demo1Printed = true;
+		}
 	}
 }
 //linksklick
