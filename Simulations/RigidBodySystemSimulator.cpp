@@ -47,7 +47,7 @@ void RigidBodySystemSimulator::loadDemo()
 		applyForceOnBody(0, Vec3(0.3, 0.5, 0.25), Vec3(1, 1, 0));
 		oldDemoChoice = 0;
 		demo1Printed = false;
-		*timeStep = 2.0f;
+		*timeStep = 0.02f;
 		break;
 	case 1:
 		addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
@@ -62,26 +62,28 @@ void RigidBodySystemSimulator::loadDemo()
 		*timeStep = 0.001f;
 		//Quader1
 		addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
-		deg90 = Quat(Vec3(0.2, 1, 0), M_PI / 2.0);
+		deg90 = Quat(Vec3(0.1, 1, 0.5), M_PI / 2.0);
 		setOrientationOf(0, deg90);
 		setVelocityOf(0, Vec3(0, 0.1, 0));
 		//Quader2
 		addRigidBody(Vec3(0, 1, 0), Vec3(1, 0.6, 0.5), 2);
-		deg90 = Quat(Vec3(0, 1, 0), M_PI / 2.0);
+		deg90 = Quat(Vec3(0.1, 0.8, 0), M_PI / 2.0);
 		setOrientationOf(1, deg90);
 		setVelocityOf(1, Vec3(0, -0.1, 0));
 		break;
 	case 3:
-		*timeStep = 0.001f;
+		*timeStep = 0.01f;
 		oldDemoChoice = 3;
 		//Quader1
 		addRigidBody(Vec3(0, 0, 0), Vec3(1, 0.6, 0.5), 2);
 		deg90 = Quat(Vec3(0, 1, 0), M_PI / 2.0);
 		setOrientationOf(0, deg90);
+		applyForceOnBody(0, Vec3(0.3, 0.8, 0.75), Vec3(1, 1, 0));
 		//Quader2
 		addRigidBody(Vec3(0, 1, 0), Vec3(1, 0.6, 0.5), 2);
 		deg90 = Quat(Vec3(0, 1, 0), M_PI / 2.0);
 		setOrientationOf(1, deg90);
+		setVelocityOf(1, Vec3(0, -0.1, 0));
 		//Quader3
 		addRigidBody(Vec3(1, 0, 0), Vec3(1, 0.6, 0.5), 2);
 		deg90 = Quat(Vec3(0, 1, 0), M_PI / 2.0);
@@ -222,7 +224,7 @@ void RigidBodySystemSimulator::externalForcesCalculations(float timeElapsed)
 		Vec3 inputView = Vec3((float)mouseDiff.x, (float)-mouseDiff.y, 0);
 		Vec3 inputWorld = worldViewInv.transformVectorNormal(inputView);
 		// find a proper scale!
-		float inputScale = 0.00004f;
+		float inputScale = 0.000004f;
 		inputWorld = inputWorld * inputScale;
 		m_externalForce = inputWorld;
 		for (std::vector<rigidBody>::iterator it = rigidBodies.begin(); it != rigidBodies.end(); it++)
