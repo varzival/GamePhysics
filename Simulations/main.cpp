@@ -22,8 +22,8 @@ using namespace GamePhysics;
 
 //#define TEMPLATE_DEMO
 //#define MASS_SPRING_SYSTEM
-#define RIGID_BODY_SYSTEM
-//#define SPH_SYSTEM
+//#define RIGID_BODY_SYSTEM
+#define SPHERE_SYSTEM
 
 #ifdef TEMPLATE_DEMO
 #include "TemplateSimulator.h"
@@ -34,8 +34,8 @@ using namespace GamePhysics;
 #ifdef RIGID_BODY_SYSTEM
 #include "RigidBodySystemSimulator.h"
 #endif
-#ifdef SPH_SYSTEM
-//#include "SPHSystemSimulator.h"
+#ifdef SPHERE_SYSTEM
+#include "SphereSystemSimulator.h"
 #endif
 
 DrawingUtilitiesClass * g_pDUC;
@@ -204,9 +204,7 @@ void CALLBACK OnMouse( bool bLeftButtonDown, bool bRightButtonDown, bool bMiddle
 		g_pSimulator->onClick(xPos,yPos);
 	}
 	else
-	{
 		g_pSimulator->onMouse(xPos, yPos);
-	}
 }
 
 
@@ -252,7 +250,7 @@ void CALLBACK OnFrameMove( double dTime, float fElapsedTime, void* pUserContext 
 		g_pSimulator->initUI(g_pDUC);
 		g_iPreTestCase = g_iTestCase;
 	}
-	if(g_bSimulateByStep){
+	if(!g_bSimulateByStep){
 #ifdef ADAPTIVESTEP
 		g_pSimulator->externalForcesCalculations(fElapsedTime);
 		static float timeAcc = 0;
@@ -272,13 +270,10 @@ void CALLBACK OnFrameMove( double dTime, float fElapsedTime, void* pUserContext 
 		g_pSimulator->simulateTimestep(g_fTimestep);
 #endif
 	}else{
-		if (DXUTIsKeyDown(VK_SPACE)) {
-			g_pSimulator->externalForcesCalculations(g_fTimestep);
+		if(DXUTIsKeyDown(VK_SPACE))
 			g_pSimulator->simulateTimestep(g_fTimestep);
-		}
 		if(DXUTIsKeyDown('S') && firstTime)
 		{
-			g_pSimulator->externalForcesCalculations(g_fTimestep);
 			g_pSimulator->simulateTimestep(g_fTimestep);
 			firstTime = false;
 		}else{
@@ -366,14 +361,12 @@ int main(int argc, char* argv[])
 #endif
 #ifdef MASS_SPRING_SYSTEM
 	g_pSimulator= new MassSpringSystemSimulator();
-	((MassSpringSystemSimulator*)g_pSimulator)->timeStep = &g_fTimestep; //pass time step variable
 #endif
 #ifdef RIGID_BODY_SYSTEM
 	g_pSimulator= new RigidBodySystemSimulator();
-	((RigidBodySystemSimulator*)g_pSimulator)->timeStep = &g_fTimestep; //pass time step variable
 #endif
-#ifdef SPH_SYSTEM
-	//g_pSimulator= new SPHSystemSimulator();
+#ifdef SPHERE_SYSTEM
+	g_pSimulator= new SphereSystemSimulator();
 #endif
 	g_pSimulator->reset();
 
