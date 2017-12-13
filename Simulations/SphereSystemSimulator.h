@@ -22,11 +22,6 @@ public:
 	void simulateTimestep(float timeStep);
 	void onClick(int x, int y);
 	void onMouse(int x, int y);
-
-private:
-	void drawSystem(SphereSystem * system);
-	void simulateSystem(SphereSystem * system, float timeStep);
-	void applyExternalForce(SphereSystem * system);
 	
 protected:
 	// Attributes
@@ -55,6 +50,10 @@ protected:
 	// m_iAccelerator should be ignored.
 	SphereSystem * m_pSphereSystemGrid;
 
+
+	void drawSystem(SphereSystem * system);
+	void simulateSystem(SphereSystem * system, float timeStep);
+	void applyExternalForce(SphereSystem * system);
 };
 
 #endif

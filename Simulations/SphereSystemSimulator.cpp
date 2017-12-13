@@ -107,7 +107,7 @@ void SphereSystemSimulator::externalForcesCalculations(float timeElapsed)
 	}
 }
 
-void applyExternalForce(SphereSystem * system)
+void SphereSystemSimulator::applyExternalForce(SphereSystem * system)
 {
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) {
 		if (m_gravityOn && !m_gotMouseStuff) {
@@ -126,7 +126,7 @@ void SphereSystemSimulator::simulateTimestep(float timeStep)
 	if (m_simulateGridSystem) simulateSystem(m_pSphereSystemGrid, timeStep);
 }
 
-void simulateSystem(SphereSystem * system, float timeStep)
+void SphereSystemSimulator::simulateSystem(SphereSystem * system, float timeStep)
 {
 	//Midpoint
 	//saving original values

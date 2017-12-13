@@ -1,10 +1,9 @@
 #pragma once
-
-#include "vectorbase.h"
+#include "util/vectorbase.h"
 #include <vector>
 
-//Rendering
-#define SPHERESIZE Vec3(0.05f, 0.05f, 0.05f)
+using namespace GamePhysics;
+using namespace std;
 
 struct Point
 {
@@ -19,8 +18,6 @@ class SphereSystem
 public:
 	SphereSystem(Vec3 color);
 
-	//float * m_fRadius;
-	//float * m_fMass;
 	Vec3 sphereColor;
 	vector<Point> spheres;
 
