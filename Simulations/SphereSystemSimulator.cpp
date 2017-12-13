@@ -12,6 +12,13 @@ std::function<float(float)> SphereSystemSimulator::m_Kernels[5] = {
 
 SphereSystemSimulator::SphereSystemSimulator()
 {
+	m_pSphereSystem = new SphereSystem(Vec3(0.0f, 1.0f, 0.0f));
+
+}
+
+SphereSystemSimulator::~SphereSystemSimulator()
+{
+	free(m_pSphereSystem);
 }
 
 const char * SphereSystemSimulator::getTestCasesStr()

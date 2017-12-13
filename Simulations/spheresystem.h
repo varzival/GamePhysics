@@ -17,7 +17,7 @@ struct Point
 class SphereSystem
 {
 public:
-	SphereSystem();
+	SphereSystem(Vec3 color);
 
 	//float * m_fRadius;
 	//float * m_fMass;

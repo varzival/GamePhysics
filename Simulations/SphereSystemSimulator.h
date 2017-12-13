@@ -11,6 +11,7 @@ class SphereSystemSimulator:public Simulator{
 public:
 	// Construtors
 	SphereSystemSimulator();
+	~SphereSystemSimulator();
 	// Functions
 	const char * getTestCasesStr();
 	void initUI(DrawingUtilitiesClass * DUC);
