@@ -12,8 +12,16 @@ std::function<float(float)> SphereSystemSimulator::m_Kernels[5] = {
 
 SphereSystemSimulator::SphereSystemSimulator()
 {
-	m_pSphereSystem = new SphereSystem(Vec3(0.0f, 1.0f, 0.0f));
+	m_simulateGridSystem = false;
+	m_iNumSpheres = 20;
+	m_fMass = 1.0f;
+	m_fRadius = 0.1f;
+	m_fDamping = 0.0f;
+	m_fForceScaling = 1.0f;
 
+	m_pSphereSystem = new SphereSystem(Vec3(0.0f, 1.0f, 0.0f));
+	populateSystem(m_pSphereSystem);
+	m_iTestCase = 0;
 }
 
 SphereSystemSimulator::~SphereSystemSimulator()
@@ -111,13 +119,27 @@ void SphereSystemSimulator::applyExternalForce(SphereSystem * system)
 {
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) {
 		if (m_gravityOn && !m_gotMouseStuff) {
-			iterator->force = iterator->mass*9.81*Vec3(0, -0.1, 0);
+			iterator->force = m_fMass*9.81*Vec3(0, -0.1, 0);
 		}
 		else {
 			iterator->force = m_externalForce;
 		}
 	}
 	
+}
+
+void SphereSystemSimulator::populateSystem(SphereSystem * system)
+{
+	system->spheres.clear();
+
+	std::mt19937 eng;
+	uniform_real_distribution<float> randPos(-0.5f, 0.5f);
+	for (int i = 0; i<m_iNumSpheres; i++)
+	{
+		Point p = { Vec3(randPos(eng), randPos(eng), randPos(eng)), Vec3(), Vec3() };
+		system->spheres.push_back(p);
+	}
+
 }
 
 void SphereSystemSimulator::simulateTimestep(float timeStep)
@@ -149,7 +171,7 @@ void SphereSystemSimulator::simulateSystem(SphereSystem * system, float timeStep
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) {
 		//if (!(iterator->fixed)) {
 			varray[i++] = iterator->velocity;
-			iterator->velocity = iterator->velocity + ((iterator->force / iterator->mass) *timeStep / 2);
+			iterator->velocity = iterator->velocity + ((iterator->force / m_fMass) *timeStep / 2);
 		//}
 	}
 	//4.Forces
@@ -165,11 +187,47 @@ void SphereSystemSimulator::simulateSystem(SphereSystem * system, float timeStep
 	i = 0;
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) {
 		//if (!(iterator->fixed)) {
-			iterator->velocity = varray[i++] + ((iterator->force / iterator->mass) *timeStep);
+			iterator->velocity = varray[i++] + ((iterator->force / m_fMass) *timeStep);
 		//}
 	}
 	free(varray);
 	free(xarray);
+
+		//"Kollision" mit der Box
+	for (vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator)
+	{
+		if (iterator->position.x < -0.5)
+		{
+			iterator->position.x = -0.5;
+			iterator->velocity.x *= -0.5;
+		}
+		if (iterator->position.x > 0.5)
+		{
+			iterator->position.x = 0.5;
+			iterator->velocity.x *= -0.5;
+		}
+		if (iterator->position.y < -0.5)
+		{
+			iterator->position.y = -0.5;
+			iterator->velocity.y *= -0.5;
+		}
+		if (iterator->position.y > 0.5)
+		{
+			iterator->position.y = 0.5;
+			iterator->velocity.y *= -0.5;
+		}
+		if (iterator->position.z < -0.5)
+		{
+			iterator->position.z = -0.5;
+			iterator->velocity.z *= -0.5;
+		}
+		if (iterator->position.z > 0.5)
+		{
+			iterator->position.z = 0.5;
+			iterator->velocity.z *= -0.5;
+		}
+
+	}
 }
 
 void SphereSystemSimulator::onClick(int x, int y)

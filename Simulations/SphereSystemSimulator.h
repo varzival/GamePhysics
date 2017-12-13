@@ -54,6 +54,7 @@ protected:
 	void drawSystem(SphereSystem * system);
 	void simulateSystem(SphereSystem * system, float timeStep);
 	void applyExternalForce(SphereSystem * system);
+	void populateSystem(SphereSystem * system);
 };
 
 #endif

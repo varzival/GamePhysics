@@ -10,13 +10,13 @@ struct Point
 	Vec3 position;
 	Vec3 velocity;
 	Vec3 force;
-	float mass;
 };
 
 class SphereSystem
 {
 public:
 	SphereSystem(Vec3 color);
+	~SphereSystem();
 
 	Vec3 sphereColor;
 	vector<Point> spheres;
