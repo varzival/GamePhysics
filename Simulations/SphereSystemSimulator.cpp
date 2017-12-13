@@ -25,6 +25,7 @@ void SphereSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 	TwAddVarRW(DUC->g_pTweakBar, "Sphere Number", TW_TYPE_INT32, &m_iNumSpheres, "min=1");
 	TwAddVarRW(DUC->g_pTweakBar, "Sphere Radius", TW_TYPE_FLOAT, &m_fRadius, "step=0.01 min=0.01");
 	TwAddVarRW(DUC->g_pTweakBar, "Sphere Mass", TW_TYPE_FLOAT, &m_fMass, "step=0.01 min=0.01");
+	TwAddVarRW(DUC->g_pTweakBar, "Gravity", TW_TYPE_BOOLCPP, &m_gravityOn, "");
 }
 
 void SphereSystemSimulator::reset()
@@ -91,10 +92,10 @@ void SphereSystemSimulator::externalForcesCalculations(float timeElapsed)
 	{
 		m_gotMouseStuff = false;
 		//Gravity
-		//if (m_gravityOn) {
+		if (m_gravityOn) {
 			//this value should never be actually used
 			m_externalForce = Vec3(0, -100.0, 0);
-		//}
+		}
 		//else m_externalForce = Vec3();
 	}
 }
@@ -166,9 +167,15 @@ void simulateSystem(SphereSystem * system, float timeStep)
 
 void SphereSystemSimulator::onClick(int x, int y)
 {
+	m_trackmouse.x = x;
+	m_trackmouse.y = y;
 }
 
 void SphereSystemSimulator::onMouse(int x, int y)
 {
+	m_oldtrackmouse.x = x;
+	m_oldtrackmouse.y = y;
+	m_trackmouse.x = x;
+	m_trackmouse.y = y;
 }
 
