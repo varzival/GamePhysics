@@ -14,14 +14,16 @@ SphereSystemSimulator::SphereSystemSimulator()
 {
 	m_simulateGridSystem = false;
 	m_iNumSpheres = 20;
+	m_ioldNumSpheres = m_iNumSpheres;
 	m_fMass = 1.0f;
 	m_fRadius = 0.1f;
 	m_fDamping = 0.0f;
-	m_fForceScaling = 1.0f;
+	m_fForceScaling = 900.0f;
+	m_iTestCase = 0;
+	m_iKernel = 1;
 
 	m_pSphereSystem = new SphereSystem(Vec3(0.0f, 1.0f, 0.0f));
-	populateSystem(m_pSphereSystem);
-	m_iTestCase = 0;
+	reset();
 }
 
 SphereSystemSimulator::~SphereSystemSimulator()
@@ -39,8 +41,10 @@ void SphereSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 	this->DUC = DUC;
 	TwAddVarRW(DUC->g_pTweakBar, "Sphere Number", TW_TYPE_INT32, &m_iNumSpheres, "min=1");
 	TwAddVarRW(DUC->g_pTweakBar, "Sphere Radius", TW_TYPE_FLOAT, &m_fRadius, "step=0.01 min=0.01");
-	TwAddVarRW(DUC->g_pTweakBar, "Sphere Mass", TW_TYPE_FLOAT, &m_fMass, "step=0.01 min=0.01");
+	TwAddVarRW(DUC->g_pTweakBar, "Sphere Mass", TW_TYPE_FLOAT, &m_fMass, "step=1.0 min=0.1");
 	TwAddVarRW(DUC->g_pTweakBar, "Gravity", TW_TYPE_BOOLCPP, &m_gravityOn, "");
+	TwType TW_TYPE_KERNEL = TwDefineEnumFromString("Collision Force Kernel", "Constant, Linear, Quadratic");
+	TwAddVarRW(DUC->g_pTweakBar, "Collision Force Kernel", TW_TYPE_KERNEL, &m_iKernel, "");
 }
 
 void SphereSystemSimulator::reset()
@@ -48,6 +52,8 @@ void SphereSystemSimulator::reset()
 	m_mouse.x = m_mouse.y = 0;
 	m_trackmouse.x = m_trackmouse.y = 0;
 	m_oldtrackmouse.x = m_oldtrackmouse.y = 0;
+
+	populateSystem(m_pSphereSystem);
 }
 
 void SphereSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContext)
@@ -73,15 +79,19 @@ void SphereSystemSimulator::notifyCaseChanged(int testCase)
 	{
 	case 0:
 		cout << "DEMO 1\n";
+		reset();
 		break;
 	case 1:
 		cout << "DEMO 2\n";
+		reset();
 		break;
 	case 2:
 		cout << "DEMO 3\n";
+		reset();
 		break;
 	default:
 		cout << "Empty Test!\n";
+		reset();
 		break;
 	}
 }
@@ -113,16 +123,18 @@ void SphereSystemSimulator::externalForcesCalculations(float timeElapsed)
 		}
 		//else m_externalForce = Vec3();
 	}
+
+	notifyNumberChanged();
 }
 
 void SphereSystemSimulator::applyExternalForce(SphereSystem * system)
 {
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) {
 		if (m_gravityOn && !m_gotMouseStuff) {
-			iterator->force = m_fMass*9.81*Vec3(0, -0.1, 0);
+			iterator->force += m_fMass*9.81*Vec3(0, -0.1, 0);
 		}
 		else {
-			iterator->force = m_externalForce;
+			iterator->force += m_externalForce;
 		}
 	}
 	
@@ -142,8 +154,36 @@ void SphereSystemSimulator::populateSystem(SphereSystem * system)
 
 }
 
+void SphereSystemSimulator::checkCollisionsNaive(SphereSystem * system)
+{
+	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) {
+		for (std::vector<Point>::iterator iterator2 = system->spheres.begin(), end = system->spheres.end(); iterator2 != end; ++iterator2) {
+			
+			float distance = norm(iterator->position - iterator2->position);
+			if (distance < 2.0f * m_fRadius)
+			{
+				float x = distance / (2.0f * m_fRadius);
+				float forceFactor = m_fForceScaling * m_Kernels[m_iKernel](x);
+				Vec3 force = forceFactor * (iterator->position - iterator2->position);
+				iterator->force += force;
+			}
+			
+		}
+	}
+}
+
+void SphereSystemSimulator::notifyNumberChanged()
+{
+	if (m_iNumSpheres != m_ioldNumSpheres)
+	{
+		m_ioldNumSpheres = m_iNumSpheres;
+		reset();
+	}
+}
+
 void SphereSystemSimulator::simulateTimestep(float timeStep)
 {
+	checkCollisionsNaive(m_pSphereSystem);
 	simulateSystem(m_pSphereSystem, timeStep);
 	if (m_simulateGridSystem) simulateSystem(m_pSphereSystemGrid, timeStep);
 }
@@ -189,6 +229,9 @@ void SphereSystemSimulator::simulateSystem(SphereSystem * system, float timeStep
 		//if (!(iterator->fixed)) {
 			iterator->velocity = varray[i++] + ((iterator->force / m_fMass) *timeStep);
 		//}
+
+		//reset force
+			iterator->force = Vec3();
 	}
 	free(varray);
 	free(xarray);

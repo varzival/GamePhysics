@@ -38,6 +38,7 @@ protected:
 	bool m_simulateGridSystem;
 	bool m_gravityOn;
 	bool m_gotMouseStuff;
+	int m_ioldNumSpheres;
 	
 	int   m_iKernel; // index of the m_Kernels[5], more detials in SphereSystemSimulator.cpp
 	static std::function<float(float)> m_Kernels[5];
@@ -55,6 +56,8 @@ protected:
 	void simulateSystem(SphereSystem * system, float timeStep);
 	void applyExternalForce(SphereSystem * system);
 	void populateSystem(SphereSystem * system);
+	void checkCollisionsNaive(SphereSystem * system);
+	void notifyNumberChanged();
 };
 
 #endif
