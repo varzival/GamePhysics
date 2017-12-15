@@ -205,7 +205,7 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 void SphereSystemSimulator::collisionBetweenTwoSpheres(std::vector<Point>::iterator a, Point b)
 {
 	float distance = norm(a->position - b.position);
-	if (distance < 2.0f * m_fRadius)
+	if (distance < 2.0f * m_fRadius&&distance>0)
 	{
 		float x = distance / (2.0f * m_fRadius);
 		float forceFactor = m_fForceScaling * m_Kernels[m_iKernel](x);
