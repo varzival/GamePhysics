@@ -7,7 +7,7 @@
 #define NAIVEACC 0
 #define GRIDACC 1
 
-class SphereSystemSimulator:public Simulator{
+class SphereSystemSimulator :public Simulator {
 public:
 	// Construtors
 	SphereSystemSimulator();
@@ -22,7 +22,7 @@ public:
 	void simulateTimestep(float timeStep);
 	void onClick(int x, int y);
 	void onMouse(int x, int y);
-	
+
 protected:
 	// Attributes
 	Vec3 m_externalForce;
@@ -39,12 +39,12 @@ protected:
 	bool m_gravityOn;
 	bool m_gotMouseStuff;
 	int m_ioldNumSpheres;
-	
+
 	int   m_iKernel; // index of the m_Kernels[5], more detials in SphereSystemSimulator.cpp
 	static std::function<float(float)> m_Kernels[5];
-	
+
 	int   m_iAccelerator; // switch between NAIVEACC and GRIDACC, (optionally, KDTREEACC, 2)
-	
+
 	SphereSystem * m_pSphereSystem; // add your own sphere system member!
 	// for Demo 3 only:
 	// you will need multiple SphereSystem objects to do comparisons in Demo 3
@@ -57,6 +57,7 @@ protected:
 	void applyExternalForce(SphereSystem * system);
 	void populateSystem(SphereSystem * system);
 	void checkCollisionsNaive(SphereSystem * system);
+	void checkCollisionsUniform(SphereSystem * system);
 	void notifyNumberChanged();
 };
 
