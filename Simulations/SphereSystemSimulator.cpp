@@ -182,14 +182,38 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 	//adding spheres to grid with index
 	int i = 0;
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) {
-		grid[ThreeDToOneD(iterator->position)].push_back(i++);
+		//mapping pos to (0,1) and then calculating position in grid, then saving index to sphere there
+		grid[ThreeDToOneD(iterator->position + Vec3(0.5, 0.5, 0.5))].push_back(i++);
 	}
+	//check for collisions
+	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) {
+		//somehow check all 3*9 spaces
+		int p = 0;
+		//if found something in point p then 
+
+		collisionBetweenTwoSpheres(iterator, system->spheres[p]);
+	}
+
+
 
 }
 
+void SphereSystemSimulator::collisionBetweenTwoSpheres(std::vector<Point>::iterator a, Point b)
+{
+	float distance = norm(a->position - b.position);
+	if (distance < 2.0f * m_fRadius)
+	{
+		float x = distance / (2.0f * m_fRadius);
+		float forceFactor = m_fForceScaling * m_Kernels[m_iKernel](x);
+		Vec3 force = forceFactor * (a->position - b.position);
+		a->force += force;
+	}
+}
+
+
 int SphereSystemSimulator::ThreeDToOneD(Vec3 pos)
 {
-	return pos.x + int(pos.y / (2 * m_fRadius)) + pos.z / (2 * m_fRadius)*(2 * m_fRadius);
+	return int(pos.x) + int(pos.y / (2 * m_fRadius)) + int(pos.z / (2 * m_fRadius)*(2 * m_fRadius));
 }
 
 void SphereSystemSimulator::notifyNumberChanged()

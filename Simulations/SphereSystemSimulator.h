@@ -58,6 +58,7 @@ protected:
 	void populateSystem(SphereSystem * system);
 	void checkCollisionsNaive(SphereSystem * system);
 	void checkCollisionsUniform(SphereSystem * system);
+	void collisionBetweenTwoSpheres(std::vector<Point>::iterator a, Point b);
 	int ThreeDToOneD(Vec3 pos);
 	void notifyNumberChanged();
 };
