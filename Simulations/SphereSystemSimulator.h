@@ -58,6 +58,7 @@ protected:
 	void populateSystem(SphereSystem * system);
 	void checkCollisionsNaive(SphereSystem * system);
 	void checkCollisionsUniform(SphereSystem * system);
+	int ThreeDToOneD(Vec3 pos);
 	void notifyNumberChanged();
 };
 

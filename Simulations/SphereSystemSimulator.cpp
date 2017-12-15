@@ -1,5 +1,6 @@
 ﻿#include "SphereSystemSimulator.h"
 
+
 std::function<float(float)> SphereSystemSimulator::m_Kernels[5] = {
 	[](float x) {return 1.0f; },              // Constant, m_iKernel = 0
 	[](float x) {return 1.0f - x; },          // Linear, m_iKernel = 1, as given in the exercise Sheet, x = d/2r
@@ -174,7 +175,21 @@ void SphereSystemSimulator::checkCollisionsNaive(SphereSystem * system)
 
 void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 {
-	
+	//make grid from -0.5 to 0.5 with radius 
+	float gridSize = 1 / (2 * m_fRadius);
+	//initialise grid with that size
+	std::vector<std::vector<int>> grid(gridSize*gridSize*gridSize);
+	//adding spheres to grid with index
+	int i = 0;
+	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) {
+		grid[ThreeDToOneD(iterator->position)].push_back(i++);
+	}
+
+}
+
+int SphereSystemSimulator::ThreeDToOneD(Vec3 pos)
+{
+	return pos.x + int(pos.y / (2 * m_fRadius)) + pos.z / (2 * m_fRadius)*(2 * m_fRadius);
 }
 
 void SphereSystemSimulator::notifyNumberChanged()
