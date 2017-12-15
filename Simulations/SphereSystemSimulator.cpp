@@ -187,7 +187,7 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 	}
 	//check for collisions
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) {
-		//somehow check all 3*9 spaces
+		//somehow check all 3*9 spaces for vector.empty() 
 		int p = 0;
 		//if found something in point p then 
 
