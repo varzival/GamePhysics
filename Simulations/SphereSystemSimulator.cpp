@@ -95,6 +95,11 @@ void SphereSystemSimulator::notifyCaseChanged(int testCase)
 		m_iCollision = 0;
 		m_iNumSpheres = 20;
 		m_pSphereSystemGrid->spheres.clear();
+		measureNum = 0;
+		accTime = 0.0;
+		measureNum2 = 0;
+		accTime2 = 0.0;
+		max = 1000;
 		reset();
 		break;
 	case 1:
@@ -103,6 +108,11 @@ void SphereSystemSimulator::notifyCaseChanged(int testCase)
 		m_iCollision = 1;
 		m_iNumSpheres = 20;
 		m_pSphereSystemGrid->spheres.clear();
+		measureNum = 0;
+		accTime = 0.0;
+		measureNum2 = 0;
+		accTime2 = 0.0;
+		max = 1000;
 		reset();
 		break;
 	case 2:
@@ -110,6 +120,12 @@ void SphereSystemSimulator::notifyCaseChanged(int testCase)
 		m_iNumSpheres = 100;
 		m_iCollision = 0;
 		m_simulateGridSystem = true;
+		measureNum = 0;
+		accTime = 0.0;
+		measureNum2 = 0;
+		accTime2 = 0.0;
+		//Bei sehr vielen Kugeln diesen wert verringern um in endlicher Zeit eine Messung zu bekommen
+		max = 100;
 		reset();
 		break;
 	default:
@@ -201,10 +217,10 @@ void SphereSystemSimulator::checkCollisionsNaive(SphereSystem * system)
 	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 	accTime += elapsed_secs;
 	measureNum++;
-	if (measureNum >= 1000)
+	if (measureNum >= max)
 	{
 		measureNum = 0;
-		cout << "Nach 1000 durchfuehrungen brauchte Naive: " << accTime << " \n";
+		cout << "Nach " << max << " durchfuehrungen, bei " << m_iNumSpheres << " Kugeln brauchte  Naive: " << accTime << " \n";
 		accTime = 0;
 	}
 }
@@ -245,10 +261,10 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 	accTime2 += elapsed_secs;
 	measureNum2++;
-	if (measureNum2 >= 1000)
+	if (measureNum2 >= max)
 	{
 		measureNum2 = 0;
-		cout << "Nach 1000 durchfuehrungen brauchte UniformGrid: " << accTime2 << " \n";
+		cout << "Nach " << max << " durchfuehrungen, bei " << m_iNumSpheres  <<" Kugeln brauchte UniformGrid: " << accTime2 << " \n";
 		accTime2 = 0;
 	}
 }

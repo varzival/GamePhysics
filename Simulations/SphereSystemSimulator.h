@@ -59,6 +59,7 @@ protected:
 
 	int measureNum2 = 0;
 	double accTime2 = 0.0;
+	int max = 1000;
 
 	void drawSystem(SphereSystem * system);
 	void simulateSystem(SphereSystem * system, float timeStep);
