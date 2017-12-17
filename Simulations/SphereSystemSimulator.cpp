@@ -1,4 +1,5 @@
 ﻿#include "SphereSystemSimulator.h"
+#include <ctime>
 
 #define GRIDCOLOR Vec3(1.0f, 1.0f, 0.0f)
 std::function<float(float)> SphereSystemSimulator::m_Kernels[5] = {
@@ -45,7 +46,6 @@ void SphereSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 	TwAddVarRW(DUC->g_pTweakBar, "Sphere Radius", TW_TYPE_FLOAT, &m_fRadius, "step=0.01 min=0.01");
 	TwAddVarRW(DUC->g_pTweakBar, "Sphere Mass", TW_TYPE_FLOAT, &m_fMass, "step=1.0 min=0.1");
 	TwAddVarRW(DUC->g_pTweakBar, "Gravity", TW_TYPE_BOOLCPP, &m_gravityOn, "");
-	TwAddVarRW(DUC->g_pTweakBar, "Grid", TW_TYPE_BOOLCPP, &m_simulateGridSystem, "");
 	TwType TW_TYPE_KERNEL = TwDefineEnumFromString("Collision Force Kernel", "Constant, Linear, Quadratic");
 	TwAddVarRW(DUC->g_pTweakBar, "Collision Force Kernel", TW_TYPE_KERNEL, &m_iKernel, "");
 	TwType TW_TYPE_COLLISION = TwDefineEnumFromString("Collision Detection Mode", "Naive, UniformGrid");
@@ -181,6 +181,8 @@ void SphereSystemSimulator::populateSystem(SphereSystem * system)
 
 void SphereSystemSimulator::checkCollisionsNaive(SphereSystem * system)
 {
+	//Performance measure
+	clock_t begin = clock();
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) 
 	{
 		for (std::vector<Point>::iterator iterator2 = system->spheres.begin(), end = system->spheres.end(); iterator2 != end; ++iterator2) 
@@ -195,10 +197,23 @@ void SphereSystemSimulator::checkCollisionsNaive(SphereSystem * system)
 			}
 		}
 	}
+	clock_t end = clock();
+	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+	accTime += elapsed_secs;
+	measureNum++;
+	if (measureNum >= 1000)
+	{
+		measureNum = 0;
+		cout << "Nach 1000 durchfuehrungen brauchte Naive: " << accTime << " \n";
+		accTime = 0;
+	}
 }
 
 void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 {
+	//Performance measure
+	clock_t begin = clock();
+
 	//make grid from -0.5 to 0.5 with radius 
 	float gridSize = 1 / (2 * m_fRadius);
 	//initialise grid with that size
@@ -224,6 +239,17 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 				}
 			}
 		}
+	}
+	//Performance mesure
+	clock_t end = clock();
+	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+	accTime2 += elapsed_secs;
+	measureNum2++;
+	if (measureNum2 >= 1000)
+	{
+		measureNum2 = 0;
+		cout << "Nach 1000 durchfuehrungen brauchte UniformGrid: " << accTime2 << " \n";
+		accTime2 = 0;
 	}
 }
 

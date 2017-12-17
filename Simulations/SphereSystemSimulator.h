@@ -53,6 +53,12 @@ protected:
 	//TODO initialisieren
 	SphereSystem * m_pSphereSystemGrid;
 
+	//Performace mesure variables
+	int measureNum = 0;
+	double accTime = 0.0;
+
+	int measureNum2 = 0;
+	double accTime2 = 0.0;
 
 	void drawSystem(SphereSystem * system);
 	void simulateSystem(SphereSystem * system, float timeStep);
