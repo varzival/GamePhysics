@@ -40,7 +40,8 @@ protected:
 	bool m_gotMouseStuff;
 	int m_ioldNumSpheres;
 
-	int   m_iKernel; // index of the m_Kernels[5], more detials in SphereSystemSimulator.cpp
+	int m_iCollision = 0;//to switch between methods might be the same as iAccelerator
+	int m_iKernel; // index of the m_Kernels[5], more detials in SphereSystemSimulator.cpp
 	static std::function<float(float)> m_Kernels[5];
 
 	int   m_iAccelerator; // switch between NAIVEACC and GRIDACC, (optionally, KDTREEACC, 2)
@@ -49,6 +50,7 @@ protected:
 	// for Demo 3 only:
 	// you will need multiple SphereSystem objects to do comparisons in Demo 3
 	// m_iAccelerator should be ignored.
+	//TODO initialisieren
 	SphereSystem * m_pSphereSystemGrid;
 
 
