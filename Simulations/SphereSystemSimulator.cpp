@@ -227,7 +227,8 @@ void SphereSystemSimulator::checkCollisionsNaive(SphereSystem * system)
 	}
 }
 
-Vec3 SphereSystemSimulator::scaleVec(Vec3 in, int gridsize) {
+Vec3 SphereSystemSimulator::scaleVec(Vec3 in, int gridsize) 
+{
 	return Vec3((in.x + 0.5)*gridsize, (in.y + 0.5)*gridsize, (in.z + 0.5)*gridsize);
 }
 void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
@@ -247,17 +248,25 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator)
 	{
 		Vec3 relpos = scaleVec(iterator->position, gridSize - 1) - Vec3(1, 1, 1);
-		for (int x = 0; x < 3; x++)
+		for (int x = -1; x < 2; x++)
 		{
-			if (x >= 0 && x < gridSize) {
-				for (int y = 0; y < 3; y++)
+			int x1 = x + (int)relpos.x;
+			if (x1 >= 0 && x1 < gridSize)
+			{
+				for (int y = -1; y < 2; y++)
 				{
-					if (y >= 0 && y < gridSize) {
-						for (int z = 0; z < 3; z++)
+					int y1 = y + (int)relpos.y;
+					if(y1 >= 0 && y1 < gridSize) 
+					{
+						for (int z = -1; z < 2; z++)
 						{
-							if (z >= 0 && z < gridSize) {
-								if (!grid[x][y][z].empty()) {
-									for (std::vector<std::vector<Point>::iterator>::iterator it = grid[x][y][z].begin(), end = grid[x][y][z].end(); it != end; ++it) {
+							int z1 = z + (int)relpos.z;
+							if (z1 >= 0 && z1 < gridSize)
+							{
+								if (!grid[x1][y1][z1].empty())
+								{
+									for (std::vector<std::vector<Point>::iterator>::iterator it = grid[x1][y1][z1].begin(), end = grid[x1][y1][z1].end(); it != end; ++it)
+									{
 										collisionBetweenTwoSpheres(iterator, *it);
 									}
 								}
