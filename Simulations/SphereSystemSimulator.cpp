@@ -58,7 +58,7 @@ void SphereSystemSimulator::reset()
 	m_trackmouse.x = m_trackmouse.y = 0;
 	m_oldtrackmouse.x = m_oldtrackmouse.y = 0;
 	gridSize = 1 / (2 * m_fRadius);
-	grid = std::vector<std::vector<std::vector<std::vector<int>>>>(gridSize, std::vector<std::vector<std::vector<int>>>(gridSize, std::vector<std::vector<int>>(gridSize, std::vector<int>(0))));
+	grid = std::vector<std::vector<std::vector<std::vector<std::vector<Point>::iterator>>>>(gridSize, std::vector<std::vector<std::vector<std::vector<Point>::iterator>>>(gridSize, std::vector<std::vector<std::vector<Point>::iterator>>(gridSize, std::vector<std::vector<Point>::iterator>(0))));
 
 	populateSystem(m_pSphereSystem);
 	if (m_simulateGridSystem)
@@ -234,16 +234,13 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 {
 	//Performance measure
 	clock_t begin = clock();
-
-	//initialise grid with that size
 	//adding spheres to grid with index
 	int i = 0;
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator)
 	{
 		//mapping pos to (0,1) and then calculating position in grid, then saving index to sphere there
 		Vec3 relpos = scaleVec(iterator->position, gridSize - 1);
-		grid[(int)relpos.x][(int)relpos.y][(int)relpos.z].push_back(i++);
-
+		grid[(int)relpos.x][(int)relpos.y][(int)relpos.z].push_back(iterator);
 	}
 
 	//check for collisions
@@ -260,10 +257,8 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 						{
 							if (z >= 0 && z < gridSize) {
 								if (!grid[x][y][z].empty()) {
-									for (std::vector<int>::iterator it = grid[x][y][z].begin(), end = grid[x][y][z].end(); it != end; ++it) {
-
-										collisionBetweenTwoSpheres(iterator, system->spheres[*it]);
-
+									for (std::vector<std::vector<Point>::iterator>::iterator it = grid[x][y][z].begin(), end = grid[x][y][z].end(); it != end; ++it) {
+										collisionBetweenTwoSpheres(iterator, *it);
 									}
 								}
 							}
@@ -300,14 +295,14 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 
 
 
-void SphereSystemSimulator::collisionBetweenTwoSpheres(std::vector<Point>::iterator a, Point b)
+void SphereSystemSimulator::collisionBetweenTwoSpheres(std::vector<Point>::iterator a, std::vector<Point>::iterator b)
 {
-	float distance = norm(a->position - b.position);
+	float distance = norm(a->position - b->position);
 	if (distance < 2.0f * m_fRadius)
 	{
 		float x = distance / (2.0f * m_fRadius);
 		float forceFactor = m_fForceScaling * m_Kernels[m_iKernel](x);
-		Vec3 force = forceFactor * (a->position - b.position);
+		Vec3 force = forceFactor * (a->position - b->position);
 		a->force += force;
 	}
 }

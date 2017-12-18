@@ -39,7 +39,7 @@ protected:
 	bool m_gravityOn;
 	bool m_gotMouseStuff;
 	int m_ioldNumSpheres;
-	std::vector<std::vector<std::vector<std::vector<int>>>> grid;
+	std::vector<std::vector<std::vector<std::vector<std::vector<Point>::iterator>>>> grid;
 
 	int m_iCollision = 0;//to switch between methods might be the same as iAccelerator
 	int m_iKernel; // index of the m_Kernels[5], more detials in SphereSystemSimulator.cpp
@@ -70,9 +70,7 @@ protected:
 	void populateSystem(SphereSystem * system);
 	void checkCollisionsNaive(SphereSystem * system);
 	void checkCollisionsUniform(SphereSystem * system);
-	void collisionBetweenTwoSpheres(std::vector<Point>::iterator a, Point b);
-	int ThreeDToOneD(Vec3 pos);
-	int surroundingCubeOffset(int i);
+	void collisionBetweenTwoSpheres(std::vector<Point>::iterator a, std::vector<Point>::iterator b);
 	void notifyNumberChanged();
 	Vec3 scaleVec(Vec3 in, int gridsize);
 };
