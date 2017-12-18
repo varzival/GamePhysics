@@ -58,6 +58,7 @@ void SphereSystemSimulator::reset()
 	m_trackmouse.x = m_trackmouse.y = 0;
 	m_oldtrackmouse.x = m_oldtrackmouse.y = 0;
 	gridSize = 1 / (2 * m_fRadius);
+	grid = std::vector<std::vector<std::vector<std::vector<int>>>>(gridSize, std::vector<std::vector<std::vector<int>>>(gridSize, std::vector<std::vector<int>>(gridSize, std::vector<int>(0))));
 
 	populateSystem(m_pSphereSystem);
 	if (m_simulateGridSystem)
@@ -226,45 +227,44 @@ void SphereSystemSimulator::checkCollisionsNaive(SphereSystem * system)
 	}
 }
 
-//maps [a1,a2] to [b1,b2], with value s
-double SphereSystemSimulator::mapRange(double a1, double a2, double b1, double b2, double s)
-{
-	return b1 + (s - a1)*(b2 - b1) / (a2 - a1);
+Vec3 SphereSystemSimulator::scaleVec(Vec3 in, int gridsize) {
+	return Vec3((in.x + 0.5)*gridsize, (in.y + 0.5)*gridsize, (in.z + 0.5)*gridsize);
 }
 void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 {
 	//Performance measure
 	clock_t begin = clock();
 
-	//make grid from -0.5 to 0.5 with radius 
-	std::vector<std::vector<std::vector<int>>> grid(gridSize, std::vector<std::vector<int>>(gridSize, std::vector<int>(gridSize, 0)));
 	//initialise grid with that size
 	//adding spheres to grid with index
 	int i = 0;
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator)
 	{
 		//mapping pos to (0,1) and then calculating position in grid, then saving index to sphere there
-		Vec3 relpos = Vec3(mapRange(-0.5, 0.5, 0, gridSize - 1, iterator->position.x), mapRange(-0.5, 0.5, 0, gridSize - 1, iterator->position.y), mapRange(-0.5, 0.5, 0, gridSize - 1, iterator->position.z)); //(iterator->position + Vec3(0.5, 0.5, 0.5))*gridSize - 1; //-1 damit wir nicht mehr als gridsize verwenden können und damit out of bounds gehen
-		grid[(int)relpos.x][(int)relpos.y][(int)relpos.z] = ++i;
+		Vec3 relpos = scaleVec(iterator->position, gridSize - 1);
+		grid[(int)relpos.x][(int)relpos.y][(int)relpos.z].push_back(i++);
 
 	}
-	
+
 	//check for collisions
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator)
 	{
-		Vec3 relpos = Vec3(mapRange(-0.5, 0.5, 0, gridSize - 1, iterator->position.x), mapRange(-0.5, 0.5, 0, gridSize - 1, iterator->position.y), mapRange(-0.5, 0.5, 0, gridSize - 1, iterator->position.z));
-		for (int x = 0; x < 3; ++x)
+		Vec3 relpos = scaleVec(iterator->position, gridSize - 1) - Vec3(1, 1, 1);
+		for (int x = 0; x < 3; x++)
 		{
 			if (x >= 0 && x < gridSize) {
-				for (int y = 0; y < 3; ++y)
+				for (int y = 0; y < 3; y++)
 				{
 					if (y >= 0 && y < gridSize) {
-						for (int z = 0; z < 3; ++z)
+						for (int z = 0; z < 3; z++)
 						{
 							if (z >= 0 && z < gridSize) {
-								int t = grid[x][y][z]-1;
-								if (t >= 0) {
-									collisionBetweenTwoSpheres(iterator, system->spheres[t]);
+								if (!grid[x][y][z].empty()) {
+									for (std::vector<int>::iterator it = grid[x][y][z].begin(), end = grid[x][y][z].end(); it != end; ++it) {
+
+										collisionBetweenTwoSpheres(iterator, system->spheres[*it]);
+
+									}
 								}
 							}
 						}
@@ -273,8 +273,19 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 			}
 		}
 	}
+	//since vector is defined in setup we clear it here
+	for (auto &gridx : grid)
+	{
+		for (auto &gridy : gridx)
+		{
+			for (auto &gridz : gridy)
+			{
+				gridz.clear();
+			}
+		}
+	}
 
-	//Performance mesure
+	//Performance measure
 	clock_t end = clock();
 	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 	accTime2 += elapsed_secs;
@@ -292,7 +303,7 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 void SphereSystemSimulator::collisionBetweenTwoSpheres(std::vector<Point>::iterator a, Point b)
 {
 	float distance = norm(a->position - b.position);
-	if (distance < 2.0f * m_fRadius&&distance>0)
+	if (distance < 2.0f * m_fRadius)
 	{
 		float x = distance / (2.0f * m_fRadius);
 		float forceFactor = m_fForceScaling * m_Kernels[m_iKernel](x);
