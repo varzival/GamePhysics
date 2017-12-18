@@ -57,6 +57,7 @@ void SphereSystemSimulator::reset()
 	m_mouse.x = m_mouse.y = 0;
 	m_trackmouse.x = m_trackmouse.y = 0;
 	m_oldtrackmouse.x = m_oldtrackmouse.y = 0;
+	gridSize = 1 / (2 * m_fRadius);
 
 	populateSystem(m_pSphereSystem);
 	if (m_simulateGridSystem)
@@ -168,13 +169,13 @@ void SphereSystemSimulator::externalForcesCalculations(float timeElapsed)
 
 void SphereSystemSimulator::applyExternalForce(SphereSystem * system)
 {
-	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) 
+	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator)
 	{
 		if (m_gravityOn && !m_gotMouseStuff)
 		{
 			iterator->force += m_fMass*9.81*Vec3(0, -0.1, 0);
 		}
-		else 
+		else
 		{
 			iterator->force += m_externalForce;
 		}
@@ -199,9 +200,9 @@ void SphereSystemSimulator::checkCollisionsNaive(SphereSystem * system)
 {
 	//Performance measure
 	clock_t begin = clock();
-	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) 
+	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator)
 	{
-		for (std::vector<Point>::iterator iterator2 = system->spheres.begin(), end = system->spheres.end(); iterator2 != end; ++iterator2) 
+		for (std::vector<Point>::iterator iterator2 = system->spheres.begin(), end = system->spheres.end(); iterator2 != end; ++iterator2)
 		{
 			float distance = norm(iterator->position - iterator2->position);
 			if (distance < 2.0f * m_fRadius)
@@ -225,37 +226,54 @@ void SphereSystemSimulator::checkCollisionsNaive(SphereSystem * system)
 	}
 }
 
+//maps [a1,a2] to [b1,b2], with value s
+double SphereSystemSimulator::mapRange(double a1, double a2, double b1, double b2, double s)
+{
+	return b1 + (s - a1)*(b2 - b1) / (a2 - a1);
+}
 void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 {
 	//Performance measure
 	clock_t begin = clock();
 
 	//make grid from -0.5 to 0.5 with radius 
-	float gridSize = 1 / (2 * m_fRadius);
+	std::vector<std::vector<std::vector<int>>> grid(gridSize, std::vector<std::vector<int>>(gridSize, std::vector<int>(gridSize, 0)));
 	//initialise grid with that size
-	std::vector<std::vector<int>> grid(gridSize*gridSize*gridSize);
 	//adding spheres to grid with index
 	int i = 0;
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator)
 	{
 		//mapping pos to (0,1) and then calculating position in grid, then saving index to sphere there
-		grid[ThreeDToOneD(iterator->position + Vec3(0.5, 0.5, 0.5))].push_back(i++);
+		Vec3 relpos = Vec3(mapRange(-0.5, 0.5, 0, gridSize - 1, iterator->position.x), mapRange(-0.5, 0.5, 0, gridSize - 1, iterator->position.y), mapRange(-0.5, 0.5, 0, gridSize - 1, iterator->position.z)); //(iterator->position + Vec3(0.5, 0.5, 0.5))*gridSize - 1; //-1 damit wir nicht mehr als gridsize verwenden können und damit out of bounds gehen
+		grid[(int)relpos.x][(int)relpos.y][(int)relpos.z] = ++i;
+
 	}
+	
 	//check for collisions
-	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator) 
+	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator)
 	{
-		int x = ThreeDToOneD(iterator->position + Vec3(0.5, 0.5, 0.5)) - 1 / (2 * m_fRadius) - 1 / ((2 * m_fRadius) * (2 * m_fRadius));
-		for (int i = 0; i < 3 * 3 * 3; ++i) 
+		Vec3 relpos = Vec3(mapRange(-0.5, 0.5, 0, gridSize - 1, iterator->position.x), mapRange(-0.5, 0.5, 0, gridSize - 1, iterator->position.y), mapRange(-0.5, 0.5, 0, gridSize - 1, iterator->position.z));
+		for (int x = 0; x < 3; ++x)
 		{
-			if (x >= 0 && grid[x + surroundingCubeOffset(i)].empty()) 
-			{
-				for (std::vector<int>::iterator it = grid[x + surroundingCubeOffset(i)].begin(), end = grid[x + surroundingCubeOffset(i)].end(); it != end; ++it) 
+			if (x >= 0 && x < gridSize) {
+				for (int y = 0; y < 3; ++y)
 				{
-					collisionBetweenTwoSpheres(iterator, system->spheres[*it]);
+					if (y >= 0 && y < gridSize) {
+						for (int z = 0; z < 3; ++z)
+						{
+							if (z >= 0 && z < gridSize) {
+								int t = grid[x][y][z]-1;
+								if (t >= 0) {
+									collisionBetweenTwoSpheres(iterator, system->spheres[t]);
+								}
+							}
+						}
+					}
 				}
 			}
 		}
 	}
+
 	//Performance mesure
 	clock_t end = clock();
 	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
@@ -264,10 +282,12 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 	if (measureNum2 >= max)
 	{
 		measureNum2 = 0;
-		cout << "Nach " << max << " durchfuehrungen, bei " << m_iNumSpheres  <<" Kugeln brauchte UniformGrid: " << accTime2 << " \n";
+		cout << "Nach " << max << " durchfuehrungen, bei " << m_iNumSpheres << " Kugeln brauchte UniformGrid: " << accTime2 << " \n";
 		accTime2 = 0;
 	}
 }
+
+
 
 void SphereSystemSimulator::collisionBetweenTwoSpheres(std::vector<Point>::iterator a, Point b)
 {
@@ -279,19 +299,6 @@ void SphereSystemSimulator::collisionBetweenTwoSpheres(std::vector<Point>::itera
 		Vec3 force = forceFactor * (a->position - b.position);
 		a->force += force;
 	}
-}
-
-int SphereSystemSimulator::ThreeDToOneD(Vec3 pos)
-{
-	return int(pos.x) + int(pos.y / (2 * m_fRadius)) + int(pos.z / (2 * m_fRadius)*(2 * m_fRadius));
-}
-
-int SphereSystemSimulator::surroundingCubeOffset(int i)
-{
-	int y = i / 3;
-	int z = i / 9;
-	int x = i % 3;
-	return int(x) + int(y / (2 * m_fRadius)) + int(z / (2 * m_fRadius)*(2 * m_fRadius));;
 }
 
 void SphereSystemSimulator::notifyNumberChanged()
@@ -307,15 +314,15 @@ void SphereSystemSimulator::simulateTimestep(float timeStep)
 {
 	switch (m_iCollision)
 	{
-		case 0:
-			checkCollisionsNaive(m_pSphereSystem);
-			break;
-		case 1:
-			checkCollisionsUniform(m_pSphereSystem);
-			break;
-		default:
-			checkCollisionsNaive(m_pSphereSystem);
-			break;
+	case 0:
+		checkCollisionsNaive(m_pSphereSystem);
+		break;
+	case 1:
+		checkCollisionsUniform(m_pSphereSystem);
+		break;
+	default:
+		checkCollisionsNaive(m_pSphereSystem);
+		break;
 	}
 	if (m_simulateGridSystem)
 	{

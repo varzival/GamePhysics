@@ -44,6 +44,8 @@ protected:
 	int m_iKernel; // index of the m_Kernels[5], more detials in SphereSystemSimulator.cpp
 	static std::function<float(float)> m_Kernels[5];
 
+	int gridSize;
+
 	int   m_iAccelerator; // switch between NAIVEACC and GRIDACC, (optionally, KDTREEACC, 2)
 
 	SphereSystem * m_pSphereSystem; // add your own sphere system member!
@@ -71,6 +73,7 @@ protected:
 	int ThreeDToOneD(Vec3 pos);
 	int surroundingCubeOffset(int i);
 	void notifyNumberChanged();
+	double mapRange(double a1, double a2, double b1, double b2, double s);
 };
 
 #endif
