@@ -93,6 +93,7 @@ void SphereSystemSimulator::notifyCaseChanged(int testCase)
 	{
 	case 0:
 		cout << "DEMO 1\n";
+		m_fRadius = 0.1f;
 		m_simulateGridSystem = false;
 		m_iCollision = 0;
 		m_iNumSpheres = 20;
@@ -106,6 +107,7 @@ void SphereSystemSimulator::notifyCaseChanged(int testCase)
 		break;
 	case 1:
 		cout << "DEMO 2\n";
+		m_fRadius = 0.1f;
 		m_simulateGridSystem = false;
 		m_iCollision = 1;
 		m_iNumSpheres = 20;
@@ -119,6 +121,7 @@ void SphereSystemSimulator::notifyCaseChanged(int testCase)
 		break;
 	case 2:
 		cout << "DEMO 3\n";
+		m_fRadius = 0.05f;
 		m_iNumSpheres = 100;
 		m_iCollision = 0;
 		m_simulateGridSystem = true;
@@ -247,7 +250,7 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 	//check for collisions
 	for (std::vector<Point>::iterator iterator = system->spheres.begin(), end = system->spheres.end(); iterator != end; ++iterator)
 	{
-		Vec3 relpos = scaleVec(iterator->position, gridSize - 1) - Vec3(1, 1, 1);
+		Vec3 relpos = scaleVec(iterator->position, gridSize - 1);
 		for (int x = -1; x < 2; x++)
 		{
 			int x1 = x + (int)relpos.x;
