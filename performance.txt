@@ -1,8 +1,8 @@
-Bei 100 Kugel (Radius 0.05) braucht Naive ~0.55s für 100 Timesteps.
-Bei 100 Kugel (Radius 0.05) braucht Uniform Grid ~0.4s für 100 Timesteps. 
+Naive performance: 100 spheres, radius 0.05, 100 timesteps: ~0.55s
+Uniform Grid performance: 100 spheres, radius 0.05, 100 timesteps: ~0.04s
 
-Bei 1000 Kugeln (Radius 0.05) braucht Naive ~44.04s für 100 Timesteps.
-Bei 1000 Kugeln (Radius 0.05) braucht Uniform Grid ~7.34s für 100 Timesteps. 
+Naive performance: 1000 spheres, radius 0.05, 100 timesteps: ~44.04s
+Uniform Grid performance: 1000 spheres, radius 0.05, 100 timesteps: ~7.34s
 
-Bei 10000 Kugeln (Radius 0.05) braucht Naive ~54.44s für 1 Timestep. 
-Bei 10000 Kugeln (Radius 0.05) braucht Uniform Grid ~4.28s für 1 Timestep. 
+Naive performance: 10000 spheres, radius 0.05, 1 timestep: ~54.44s 
+Uniform Grid performance: 10000 spheres, radius 0.05, 1 timestep: ~4.28s

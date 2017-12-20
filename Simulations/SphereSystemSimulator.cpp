@@ -32,6 +32,7 @@ SphereSystemSimulator::SphereSystemSimulator()
 SphereSystemSimulator::~SphereSystemSimulator()
 {
 	free(m_pSphereSystem);
+	free(m_pSphereSystemGrid);
 }
 
 const char * SphereSystemSimulator::getTestCasesStr()
@@ -225,7 +226,7 @@ void SphereSystemSimulator::checkCollisionsNaive(SphereSystem * system)
 	if (measureNum >= max)
 	{
 		measureNum = 0;
-		cout << "Nach " << max << " durchfuehrungen, bei " << m_iNumSpheres << " Kugeln brauchte  Naive: " << accTime << " \n";
+		cout << "Naive time measurement with " << max << " timesteps, " << m_iNumSpheres << " spheres: " << accTime << " \n";
 		accTime = 0;
 	}
 }
@@ -300,7 +301,7 @@ void SphereSystemSimulator::checkCollisionsUniform(SphereSystem * system)
 	if (measureNum2 >= max)
 	{
 		measureNum2 = 0;
-		cout << "Nach " << max << " durchfuehrungen, bei " << m_iNumSpheres << " Kugeln brauchte UniformGrid: " << accTime2 << " \n";
+		cout << "Uniform Grid time measurement with "<< max << " timesteps, " << m_iNumSpheres << " spheres: " << accTime2 << " \n";
 		accTime2 = 0;
 	}
 }
