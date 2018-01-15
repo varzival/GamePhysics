@@ -225,6 +225,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="MassSpringSystemSimulator.cpp" />
+    <ClCompile Include="ProjectSystemSimulator.cpp" />
     <ClCompile Include="rigidBody.cpp" />
     <ClCompile Include="RigidBodySystemSimulator.cpp" />
     <ClCompile Include="spheresystem.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="collisionDetect.h" />
     <ClInclude Include="DrawingUtilitiesClass.h" />
     <ClInclude Include="MassSpringSystemSimulator.h" />
+    <ClInclude Include="ProjectSystemSimulator.h" />
     <ClInclude Include="rigidBody.h" />
     <ClInclude Include="RigidBodySystemSimulator.h" />
     <ClInclude Include="Simulator.h" />
