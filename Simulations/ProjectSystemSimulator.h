@@ -2,9 +2,38 @@
 
 #include "Simulator.h"
 
+#define EULER 0
+#define LEAPFROG 1
+#define MIDPOINT 2
+
+//Rendering
+#define SPHERECOLOR Vec3(0.0f, 1.0f, 0.0f)
+#define SPRINGCOLOR1 Vec3(1.0f, 1.0f, 0.0f)
+#define SPRINGCOLOR2 Vec3(1.0f, 0.0f, 0.0f)
+#define SPRINGCOLORFACTOR 2.0f;
+
+
+//Represents a single Spring
+struct Spring {
+	int point1;
+	int point2;
+	float stiffness;
+	float initialLength;
+};
+//Represents a single Point
+struct Point
+{
+	Vec3 position;
+	Vec3 velocity;
+	Vec3 force;
+	float mass;
+	float damping;
+	bool fixed;
+	float radius;
+};
+
 class ProjectSystemSimulator : public Simulator
 {
-
 public:
 	// Attributes
 	int m_iTestCase;
@@ -29,11 +58,14 @@ public:
 	**for more info on what functions avaialble to use take a look at the DrawingUtilities Class
 	*/
 	void drawFrame(ID3D11DeviceContext* pd3dImmediateContext);
+	void computeElasticForces(Spring s);
+	void applyExternalForce();
 	/*
 	This Function is used to calculate  called by the simulator enviroment
 	input: fElapsedTime is the elapsed time since the last timestep
 	*/
 	void externalForcesCalculations(float timeElapsed);
+	void checkCollisionsNaive();
 	/*
 	This Function is used to simulate one step of the simulation called by the simulator enviroment
 	input: timeStep is the time step of the stimulation
@@ -57,5 +89,45 @@ public:
 	input x,y: the mouse position in pixels
 	*/
 	void onMouse(int x, int y);
+
+	int addMassPoint(Vec3 position, Vec3 Velocity, bool isFixed);
+
+	int addMassPointToVector(Vec3 position, Vec3 Velocity, bool isFixed, std::vector<Point>* massVector);
+
+	void addSpring(int masspoint1, int masspoint2, float initialLength);
+
+	void addSpringToVector(int masspoint1, int masspoint2, float initialLength, std::vector<Spring>* springVector);
+
+	int getNumberOfMassPoints();
+
+	int getNumberOfSprings();
+
+	Vec3 getPositionOfMassPoint(int index);
+
+	Vec3 getVelocityOfMassPoint(int index);
+
+private:
+	int m_iKernel;
+	float m_fForceScaling;
+	float m_fStiffness;
+	float m_fDamping;
+	int m_iIntegrator;
+
+	// UI Attributes
+	Vec3 m_externalForce;
+	Point2D m_mouse;
+	Point2D m_trackmouse;
+	Point2D m_oldtrackmouse;
+	int m_setupNr;
+	int m_setupChoice;
+	bool m_demo1StepSimulated;
+	bool m_gravityOn;
+	bool m_collisionsOn;
+	bool m_gotMouseStuff;
+
+	std::vector<Spring> Springs;
+	std::vector<Point> Points;
+
+	static std::function<float(float)> m_Kernels[5];
 
 };
