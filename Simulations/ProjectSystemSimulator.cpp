@@ -21,6 +21,18 @@ void ProjectSystemSimulator::reset()
 	m_oldtrackmouse.x = m_oldtrackmouse.y = 0;
 }
 
+ProjectSystemSimulator::ProjectSystemSimulator()
+{
+	m_iIntegrator = EULER;
+	m_fDamping = 0.0f;
+	m_fForceScaling = 900.0f;
+	m_iTestCase = 0;
+	m_iKernel = 1;
+	m_fStiffness = 1.0f;
+
+	makeBlanket(0.05f, 1.0f, 1.0f, 0.0f, 6);
+}
+
 void ProjectSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
 	this->DUC = DUC;
@@ -30,22 +42,23 @@ void ProjectSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContex
 {
 	Vec3 zero = Vec3(0, 0, 0);
 
-	for each (Point point in Points)
+	for (vector<Point>::iterator point = Points.begin(), end = Points.end(); point != end; ++point)
 	{
 		DUC->setUpLighting(Vec3(), Vec3(1.0f, 1.0f, 1.0f), 0.1, SPHERECOLOR);
-		DUC->drawSphere(point.position, point.radius);
+		DUC->drawSphere(point->position, point->radius);
 	}
-	for each (Spring spring in Springs)
+
+	for (vector<Spring>::iterator spring = Springs.begin(), end = Springs.end(); spring != end; ++spring)
 	{
-		Point p1 = Points[spring.point1];
-		Point p2 = Points[spring.point2];
+		Point p1 = Points[spring->point1];
+		Point p2 = Points[spring->point2];
 
 		//Fancy Spring color effect
 		DirectX::XMVECTOR v1 = p1.position.toDirectXVector();
 		DirectX::XMVECTOR v2 = p2.position.toDirectXVector();
 		DirectX::XMVECTOR l = XMVector3Length(v1 - v2);
 		float diff = XMVectorGetX(l); //distance between Points
-		float diffFact = (diff - spring.initialLength) / spring.initialLength; //distance in relation to spring length
+		float diffFact = (diff - spring->initialLength) / spring->initialLength; //distance in relation to spring length
 		float cf; //color factor for second color in [0, 1]
 		if (diffFact < 0.0f) cf = 0.0f;
 		else {
@@ -185,6 +198,7 @@ void ProjectSystemSimulator::simulateTimestep(float timeStep)
 		//EULER
 		//1.Forces
 		applyExternalForce();
+		checkCollisionsNaive();
 		for (std::vector<Spring>::iterator iterator = Springs.begin(), end = Springs.end(); iterator != end; ++iterator) {
 			computeElasticForces(*iterator);
 		}
@@ -210,6 +224,7 @@ void ProjectSystemSimulator::simulateTimestep(float timeStep)
 		varray = (Vec3*)malloc(sizeof(Vec3)*p);
 		//1.Forces
 		applyExternalForce();
+		checkCollisionsNaive();
 		for (std::vector<Spring>::iterator iterator = Springs.begin(), end = Springs.end(); iterator != end; ++iterator) {
 			computeElasticForces(*iterator);
 		}
@@ -231,6 +246,7 @@ void ProjectSystemSimulator::simulateTimestep(float timeStep)
 		}
 		//4.Forces
 		applyExternalForce();
+		checkCollisionsNaive();
 		for (std::vector<Spring>::iterator iterator = Springs.begin(), end = Springs.end(); iterator != end; ++iterator) {
 			computeElasticForces(*iterator);
 		}
@@ -275,31 +291,23 @@ void ProjectSystemSimulator::onMouse(int x, int y)
 	m_trackmouse.y = y;
 }
 
-int ProjectSystemSimulator::addMassPoint(Vec3 position, Vec3 Velocity, bool isFixed)
-{
-	return addMassPointToVector(position, Velocity, isFixed, &Points);
-}
 
-int ProjectSystemSimulator::addMassPointToVector(Vec3 position, Vec3 Velocity, bool isFixed, std::vector<Point>* massVector)
+
+int ProjectSystemSimulator::addMassPoint(Vec3 position, Vec3 Velocity, float radius, float mass, bool isFixed)
 {
 	Point p;
 	p.position = position;
 	p.velocity = Velocity;
-	//p.mass = m_fMass;
-	//TODO individual mass
+	p.mass = mass;
+	p.radius = radius;
 	p.damping = 0;
 	p.force = Vec3(0.0, 0.0, 0.0);
 	p.fixed = isFixed;
-	massVector->push_back(p);
-	return massVector->size() - 1;
+	Points.push_back(p);
+	return Points.size() - 1;
 }
 
 void ProjectSystemSimulator::addSpring(int masspoint1, int masspoint2, float initialLength)
-{
-	addSpringToVector(masspoint1, masspoint2, initialLength, &Springs);
-}
-
-void ProjectSystemSimulator::addSpringToVector(int masspoint1, int masspoint2, float initialLength, std::vector<Spring>* springVector)
 {
 	if (masspoint1 > (Points.size() - 1))
 	{
@@ -317,7 +325,7 @@ void ProjectSystemSimulator::addSpringToVector(int masspoint1, int masspoint2, f
 	s.stiffness = m_fStiffness;
 	s.point1 = masspoint1;
 	s.point2 = masspoint2;
-	springVector->push_back(s);
+	Springs.push_back(s);
 }
 
 int ProjectSystemSimulator::getNumberOfMassPoints()
@@ -338,4 +346,85 @@ Vec3 ProjectSystemSimulator::getPositionOfMassPoint(int index)
 Vec3 ProjectSystemSimulator::getVelocityOfMassPoint(int index)
 {
 	return Points.at(index).velocity;
+}
+
+void ProjectSystemSimulator::makeBlanket(float radius, float mass, float width, float level, int num)
+{
+	Points.clear();
+
+	for (int i = 0; i < num; i++)
+	{
+		for (int j = 0; j < num; j++)
+		{
+			float initX = -(width / 2.0f);
+			float initZ = -(width / 2.0f);
+			float posX = initX + (width / (float)num) * i;
+			float posZ = initZ + (width / (float)num) * j;
+			addMassPoint(Vec3(posX, level, posZ), Vec3(), radius, mass, false);
+		}
+	}
+
+	int springLength = 2 * (width / (float)num);
+	
+	
+	//Springs
+	for (int i = 0; i < num*num; i++)
+	{
+		if (i == 0)
+		{
+			addSpring(0, 1, springLength);
+			addSpring(0, num, springLength);
+		}
+		else if (i == num - 1)
+		{
+			addSpring(num - 1, num - 2, springLength);
+			addSpring(num - 1, 2 * num - 1, springLength);
+		}
+		else if (i == num*num - 1)
+		{
+			addSpring(num*num - 1, num*num - 2, springLength);
+			addSpring(num*num - 1, num*num - 1 - num, springLength);
+		}
+		else if (i == num*num - num)
+		{
+			addSpring(num*num - num, num*num - num + 1, springLength);
+			addSpring(num*num - num, num*num - 2 * num, springLength);
+		}
+		else if (i % num == 0)
+		{
+			//left edge
+			addSpring(i, i - num, springLength);
+			addSpring(i, i + num, springLength);
+			addSpring(i, i + 1, springLength);
+		}
+		else if (i % num == num - 1)
+		{
+			//right edge
+			addSpring(i, i - num, springLength);
+			addSpring(i, i + num, springLength);
+			addSpring(i, i - 1, springLength);
+		}
+		else if (i / num < 1)
+		{
+			//bottom edge
+			addSpring(i, i - 1, springLength);
+			addSpring(i, i + 1, springLength);
+			addSpring(i, i + num, springLength);
+		}
+		else if (i / num >= num - 1)
+		{
+			//top edge
+			addSpring(i, i - 1, springLength);
+			addSpring(i, i + 1, springLength);
+			addSpring(i, i - num, springLength);
+		}
+		else
+		{
+			addSpring(i - 1, i, springLength);
+			addSpring(i + 1, i, springLength);
+			addSpring(i + num, i, springLength);
+			addSpring(i - num, i, springLength);
+		}
+	}
+
 }

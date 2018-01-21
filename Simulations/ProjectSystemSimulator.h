@@ -44,6 +44,8 @@ public:
 
 	void reset();
 
+	ProjectSystemSimulator();
+
 	/*
 	This Function is used to initialize the GUI with customized componnents per simulations
 	input: DUC pointer for the DrawingUtilities to setup the UI componnents
@@ -89,22 +91,15 @@ public:
 	input x,y: the mouse position in pixels
 	*/
 	void onMouse(int x, int y);
-
-	int addMassPoint(Vec3 position, Vec3 Velocity, bool isFixed);
-
-	int addMassPointToVector(Vec3 position, Vec3 Velocity, bool isFixed, std::vector<Point>* massVector);
-
+	int addMassPoint(Vec3 position, Vec3 Velocity, float radius, float mass, bool isFixed);
 	void addSpring(int masspoint1, int masspoint2, float initialLength);
-
 	void addSpringToVector(int masspoint1, int masspoint2, float initialLength, std::vector<Spring>* springVector);
-
 	int getNumberOfMassPoints();
-
 	int getNumberOfSprings();
-
 	Vec3 getPositionOfMassPoint(int index);
-
 	Vec3 getVelocityOfMassPoint(int index);
+	void makeBlanket(float radius, float mass, float length, float level, int num);
+
 
 private:
 	int m_iKernel;
