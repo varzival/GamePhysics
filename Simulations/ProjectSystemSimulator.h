@@ -98,7 +98,7 @@ public:
 	int getNumberOfSprings();
 	Vec3 getPositionOfMassPoint(int index);
 	Vec3 getVelocityOfMassPoint(int index);
-	void makeBlanket(float radius, float mass, float length, float level, int num);
+	void makeBlanket(float radius, float mass, float length, float level, int num, float hangingFactor);
 
 
 private:

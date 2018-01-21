@@ -24,13 +24,13 @@ void ProjectSystemSimulator::reset()
 ProjectSystemSimulator::ProjectSystemSimulator()
 {
 	m_iIntegrator = EULER;
-	m_fDamping = 0.0f;
+	m_fDamping = 1.0f;
 	m_fForceScaling = 900.0f;
 	m_iTestCase = 0;
 	m_iKernel = 1;
-	m_fStiffness = 1.0f;
+	m_fStiffness = 40.0f;
 
-	makeBlanket(0.05f, 1.0f, 1.0f, 0.0f, 6);
+	makeBlanket(0.05f, 1.0f, 1.0f, 0.0f, 6, 3.0f);
 }
 
 void ProjectSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
@@ -123,8 +123,8 @@ void ProjectSystemSimulator::computeElasticForces(Spring s) {
 	Vec3 diff1 = p1->position - p2->position;
 	float diff1length = sqrt(diff1[0] * diff1[0] + diff1[1] * diff1[1] + diff1[2] * diff1[2]);
 	Vec3 diff1initialLenth = (s.initialLength / diff1length) * diff1;
-	p1->force -= s.stiffness*(diff1 - diff1initialLenth);
-	p2->force -= s.stiffness*-(diff1 - diff1initialLenth);
+	p1->force -= m_fStiffness*(diff1 - diff1initialLenth);
+	p2->force -= m_fStiffness*-(diff1 - diff1initialLenth);
 	p1->force -= p1->velocity*m_fDamping;
 	p2->force -= p2->velocity*m_fDamping;
 }
@@ -348,7 +348,7 @@ Vec3 ProjectSystemSimulator::getVelocityOfMassPoint(int index)
 	return Points.at(index).velocity;
 }
 
-void ProjectSystemSimulator::makeBlanket(float radius, float mass, float width, float level, int num)
+void ProjectSystemSimulator::makeBlanket(float radius, float mass, float width, float level, int num, float hangingFactor)
 {
 	Points.clear();
 
@@ -360,11 +360,14 @@ void ProjectSystemSimulator::makeBlanket(float radius, float mass, float width, 
 			float initZ = -(width / 2.0f);
 			float posX = initX + (width / (float)num) * i;
 			float posZ = initZ + (width / (float)num) * j;
-			addMassPoint(Vec3(posX, level, posZ), Vec3(), radius, mass, false);
+			bool fixed;
+			if ((i == 0 && j == 0) || (i == num - 1 && j == 0) || (i == 0 && j == num - 1) || (i == num - 1 && j == num - 1)) fixed = true;
+			else fixed = false;
+			addMassPoint(Vec3(posX, level, posZ), Vec3(), radius, mass, fixed);
 		}
 	}
 
-	int springLength = 2 * (width / (float)num);
+	int springLength = hangingFactor * (width / (float)num);
 	
 	
 	//Springs
