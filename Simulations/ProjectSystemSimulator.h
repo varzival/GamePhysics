@@ -107,6 +107,7 @@ private:
 	float m_fStiffness;
 	float m_fDamping;
 	int m_iIntegrator;
+	int indexToForce;
 
 	int numberDropBalls = 3;
 	Real dropBallRadius = 0.1;
