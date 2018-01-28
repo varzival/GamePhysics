@@ -1,4 +1,6 @@
 #include "ProjectSystemSimulator.h"
+#include <time.h>
+#include <random>
 
 std::function<float(float)> ProjectSystemSimulator::m_Kernels[5] = {
 	[](float x) {return 1.0f; },              // Constant, m_iKernel = 0
@@ -365,6 +367,20 @@ void ProjectSystemSimulator::makeBlanket(float radius, float mass, float width, 
 			else fixed = false;
 			addMassPoint(Vec3(posX, level, posZ), Vec3(), radius, mass, fixed);
 		}
+	}
+	
+	for (int i = 0; i < numberDropBalls; i++)
+	{
+		std::mt19937 rng;
+		rng.seed(std::random_device()());
+		std::uniform_int_distribution<std::mt19937::result_type> dist10(0, 10);
+		float x = (dist10(rng) - 5.0f) / 10.0f;
+
+		rng.seed(std::random_device()());
+		std::uniform_int_distribution<std::mt19937::result_type> dist11(0, 10);
+		cout << dist11(rng);
+		float z = (dist11(rng) - 5.0f) / 10.0f;
+		addMassPoint(Vec3(x, 0.5, z), Vec3(0.0, -1.0, 0.0), dropBallRadius, dropBallMass, false);
 	}
 
 	int springLength = hangingFactor * (width / (float)num);

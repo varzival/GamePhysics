@@ -108,6 +108,10 @@ private:
 	float m_fDamping;
 	int m_iIntegrator;
 
+	int numberDropBalls = 3;
+	Real dropBallRadius = 0.1;
+	float dropBallMass = 3.0f;
+
 	// UI Attributes
 	Vec3 m_externalForce;
 	Point2D m_mouse;
