@@ -31,8 +31,9 @@ ProjectSystemSimulator::ProjectSystemSimulator()
 	m_iTestCase = 0;
 	m_iKernel = 1;
 	m_fStiffness = 40.0f;
-
-	makeBlanket(0.05f, 1.0f, 1.0f, 0.0f, 6, 3.0f);
+	int num = 6;
+	makeBlanket(0.05f, 1.0f, 1.0f, 0.0f, num, 3.0f);
+	indexToForce = num * num;
 }
 
 void ProjectSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
@@ -125,8 +126,8 @@ void ProjectSystemSimulator::computeElasticForces(Spring s) {
 	Vec3 diff1 = p1->position - p2->position;
 	float diff1length = sqrt(diff1[0] * diff1[0] + diff1[1] * diff1[1] + diff1[2] * diff1[2]);
 	Vec3 diff1initialLenth = (s.initialLength / diff1length) * diff1;
-	p1->force -= m_fStiffness*(diff1 - diff1initialLenth);
-	p2->force -= m_fStiffness*-(diff1 - diff1initialLenth);
+	p1->force -= m_fStiffness * (diff1 - diff1initialLenth);
+	p2->force -= m_fStiffness * -(diff1 - diff1initialLenth);
 	p1->force -= p1->velocity*m_fDamping;
 	p2->force -= p2->velocity*m_fDamping;
 }
@@ -134,7 +135,7 @@ void ProjectSystemSimulator::computeElasticForces(Spring s) {
 void ProjectSystemSimulator::applyExternalForce() {
 	for (std::vector<Point>::iterator iterator = Points.begin(), end = Points.end(); iterator != end; ++iterator) {
 
-		if (m_gravityOn && !m_gotMouseStuff) {
+		if (m_gravityOn && (!m_gotMouseStuff || (std::distance(Points.begin(), iterator)) < indexToForce)) {
 			iterator->force = iterator->mass*9.81*Vec3(0, -0.1, 0);
 		}
 		else {
@@ -368,7 +369,7 @@ void ProjectSystemSimulator::makeBlanket(float radius, float mass, float width, 
 			addMassPoint(Vec3(posX, level, posZ), Vec3(), radius, mass, fixed);
 		}
 	}
-	
+
 	for (int i = 0; i < numberDropBalls; i++)
 	{
 		std::mt19937 rng;
@@ -384,8 +385,8 @@ void ProjectSystemSimulator::makeBlanket(float radius, float mass, float width, 
 	}
 
 	int springLength = hangingFactor * (width / (float)num);
-	
-	
+
+
 	//Springs
 	for (int i = 0; i < num*num; i++)
 	{
@@ -399,12 +400,12 @@ void ProjectSystemSimulator::makeBlanket(float radius, float mass, float width, 
 			addSpring(num - 1, num - 2, springLength);
 			addSpring(num - 1, 2 * num - 1, springLength);
 		}
-		else if (i == num*num - 1)
+		else if (i == num * num - 1)
 		{
 			addSpring(num*num - 1, num*num - 2, springLength);
 			addSpring(num*num - 1, num*num - 1 - num, springLength);
 		}
-		else if (i == num*num - num)
+		else if (i == num * num - num)
 		{
 			addSpring(num*num - num, num*num - num + 1, springLength);
 			addSpring(num*num - num, num*num - 2 * num, springLength);
