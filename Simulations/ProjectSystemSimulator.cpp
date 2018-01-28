@@ -46,7 +46,7 @@ void ProjectSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 	this->DUC = DUC;
 
 	TwAddVarRW(DUC->g_pTweakBar, "Sphere Radius", TW_TYPE_DOUBLE, &dropBallRadius, "step=0.01 min=0.01");
-	TwAddVarRW(DUC->g_pTweakBar, "Sphere Number", TW_TYPE_INT32, &numberDropBalls, "step=1 min=1");
+	TwAddVarRW(DUC->g_pTweakBar, "Sphere Number", TW_TYPE_INT32, &numberDropBalls, "step=1 min=0");
 	TwAddVarRW(DUC->g_pTweakBar, "Sphere Mass", TW_TYPE_FLOAT, &dropBallMass, "step=0.5 min=0.5");
 }
 
