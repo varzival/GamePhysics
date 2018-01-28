@@ -40,9 +40,9 @@ void ProjectSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
 	this->DUC = DUC;
 
-	TwAddVarRW(DUC->g_pTweakBar, "Sphere Radius", TW_TYPE_FLOAT, &dropBallRadius, "step=0.01 min=0.01");
+	TwAddVarRW(DUC->g_pTweakBar, "Sphere Radius", TW_TYPE_DOUBLE, &dropBallRadius, "step=0.01 min=0.01");
 	TwAddVarRW(DUC->g_pTweakBar, "Sphere Number", TW_TYPE_INT32, &numberDropBalls, "step=1 min=1");
-	TwAddVarRW(DUC->g_pTweakBar, "Sphere Mass", TW_TYPE_INT32, &dropBallMass, "step=0.5 min=0.5");
+	TwAddVarRW(DUC->g_pTweakBar, "Sphere Mass", TW_TYPE_FLOAT, &dropBallMass, "step=0.5 min=0.5");
 }
 
 void ProjectSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContext)
@@ -374,6 +374,8 @@ void ProjectSystemSimulator::makeBlanket(float radius, float mass, float width, 
 		}
 	}
 
+	addMassPoint(Vec3(0.0, 0.5, 0.0), Vec3(0.0, -1.0, 0.0), dropBallRadius, dropBallMass, false);
+
 	for (int i = 0; i < numberDropBalls; i++)
 	{
 		std::mt19937 rng;
@@ -383,7 +385,6 @@ void ProjectSystemSimulator::makeBlanket(float radius, float mass, float width, 
 
 		rng.seed(std::random_device()());
 		std::uniform_int_distribution<std::mt19937::result_type> dist11(0, 10);
-		cout << dist11(rng);
 		float z = (dist11(rng) - 5.0f) / 10.0f;
 		addMassPoint(Vec3(x, 0.5, z), Vec3(0.0, -1.0, 0.0), dropBallRadius, dropBallMass, false);
 	}
