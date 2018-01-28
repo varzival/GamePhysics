@@ -92,6 +92,8 @@ public:
 	*/
 	void onMouse(int x, int y);
 	int addMassPoint(Vec3 position, Vec3 Velocity, float radius, float mass, bool isFixed);
+	int addSphere(Vec3 position, Vec3 Velocity, float radius, float mass, bool isFixed);
+	int numOfPoints;
 	void addSpring(int masspoint1, int masspoint2, float initialLength);
 	void addSpringToVector(int masspoint1, int masspoint2, float initialLength, std::vector<Spring>* springVector);
 	int getNumberOfMassPoints();
@@ -126,6 +128,7 @@ private:
 
 	std::vector<Spring> Springs;
 	std::vector<Point> Points;
+
 
 	static std::function<float(float)> m_Kernels[5];
 
