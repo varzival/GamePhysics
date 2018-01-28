@@ -25,7 +25,6 @@ void ProjectSystemSimulator::reset()
 
 ProjectSystemSimulator::ProjectSystemSimulator()
 {
-	numOfPoints = 0;
 	m_iIntegrator = EULER;
 	m_fDamping = 1.0f;
 	m_fForceScaling = 900.0f;
@@ -34,7 +33,6 @@ ProjectSystemSimulator::ProjectSystemSimulator()
 	m_fStiffness = 40.0f;
 
 	makeBlanket(0.05f, 1.0f, 1.0f, 0.0f, 6, 3.0f);
-	addSphere(Vec3(0.25, 0.25, 0.5), Vec3(), 0.1f, 1.0f, false);
 }
 
 void ProjectSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
@@ -127,8 +125,8 @@ void ProjectSystemSimulator::computeElasticForces(Spring s) {
 	Vec3 diff1 = p1->position - p2->position;
 	float diff1length = sqrt(diff1[0] * diff1[0] + diff1[1] * diff1[1] + diff1[2] * diff1[2]);
 	Vec3 diff1initialLenth = (s.initialLength / diff1length) * diff1;
-	p1->force -= m_fStiffness * (diff1 - diff1initialLenth);
-	p2->force -= m_fStiffness * -(diff1 - diff1initialLenth);
+	p1->force -= m_fStiffness*(diff1 - diff1initialLenth);
+	p2->force -= m_fStiffness*-(diff1 - diff1initialLenth);
 	p1->force -= p1->velocity*m_fDamping;
 	p2->force -= p2->velocity*m_fDamping;
 }
@@ -222,7 +220,7 @@ void ProjectSystemSimulator::simulateTimestep(float timeStep)
 	case 2:
 		//Midpoint
 		//saving original values
-		p = numOfPoints;
+		p = Points.size();
 		Vec3 *xarray, *varray;
 		xarray = (Vec3*)malloc(sizeof(Vec3)*p);
 		varray = (Vec3*)malloc(sizeof(Vec3)*p);
@@ -308,32 +306,17 @@ int ProjectSystemSimulator::addMassPoint(Vec3 position, Vec3 Velocity, float rad
 	p.force = Vec3(0.0, 0.0, 0.0);
 	p.fixed = isFixed;
 	Points.push_back(p);
-	numOfPoints++;
-	return numOfPoints - 1;
-}
-
-int ProjectSystemSimulator::addSphere(Vec3 position, Vec3 Velocity, float radius, float mass, bool isFixed)
-{
-	Point p;
-	p.position = position;
-	p.velocity = Velocity;
-	p.mass = mass;
-	p.radius = radius;
-	p.damping = 0;
-	p.force = Vec3(0.0, 0.0, 0.0);
-	p.fixed = isFixed;
-	Points.push_back(p);
-	return numOfPoints - 1;
+	return Points.size() - 1;
 }
 
 void ProjectSystemSimulator::addSpring(int masspoint1, int masspoint2, float initialLength)
 {
-	if (masspoint1 > (numOfPoints - 1))
+	if (masspoint1 > (Points.size() - 1))
 	{
 		std::cout << "Could not find point on index " << masspoint1 << "\n";
 		return;
 	}
-	if (masspoint2 > (numOfPoints - 1))
+	if (masspoint2 > (Points.size() - 1))
 	{
 		std::cout << "Could not find point on index " << masspoint2 << "\n";
 		return;
@@ -349,7 +332,7 @@ void ProjectSystemSimulator::addSpring(int masspoint1, int masspoint2, float ini
 
 int ProjectSystemSimulator::getNumberOfMassPoints()
 {
-	return numOfPoints;
+	return Points.size();
 }
 
 int ProjectSystemSimulator::getNumberOfSprings()
@@ -401,8 +384,8 @@ void ProjectSystemSimulator::makeBlanket(float radius, float mass, float width, 
 	}
 
 	int springLength = hangingFactor * (width / (float)num);
-
-
+	
+	
 	//Springs
 	for (int i = 0; i < num*num; i++)
 	{
@@ -416,12 +399,12 @@ void ProjectSystemSimulator::makeBlanket(float radius, float mass, float width, 
 			addSpring(num - 1, num - 2, springLength);
 			addSpring(num - 1, 2 * num - 1, springLength);
 		}
-		else if (i == num * num - 1)
+		else if (i == num*num - 1)
 		{
 			addSpring(num*num - 1, num*num - 2, springLength);
 			addSpring(num*num - 1, num*num - 1 - num, springLength);
 		}
-		else if (i == num * num - num)
+		else if (i == num*num - num)
 		{
 			addSpring(num*num - num, num*num - num + 1, springLength);
 			addSpring(num*num - num, num*num - 2 * num, springLength);
