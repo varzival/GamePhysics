@@ -21,6 +21,11 @@ void ProjectSystemSimulator::reset()
 	m_mouse.x = m_mouse.y = 0;
 	m_trackmouse.x = m_trackmouse.y = 0;
 	m_oldtrackmouse.x = m_oldtrackmouse.y = 0;
+
+	int num = 6;
+	makeBlanket(0.05f, 1.0f, 1.0f, 0.0f, num, 3.0f);
+	indexToForce = num * num;
+
 }
 
 ProjectSystemSimulator::ProjectSystemSimulator()
@@ -282,6 +287,7 @@ void ProjectSystemSimulator::simulateTimestep(float timeStep)
 
 void ProjectSystemSimulator::notifyCaseChanged(int testCase)
 {
+	reset();
 }
 
 void ProjectSystemSimulator::onClick(int x, int y)
@@ -390,7 +396,7 @@ void ProjectSystemSimulator::makeBlanket(float radius, float mass, float width, 
 	}
 
 	int springLength = hangingFactor * (width / (float)num);
-
+	Springs.clear();
 
 	//Springs
 	for (int i = 0; i < num*num; i++)
