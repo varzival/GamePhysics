@@ -38,6 +38,10 @@ ProjectSystemSimulator::ProjectSystemSimulator()
 void ProjectSystemSimulator::initUI(DrawingUtilitiesClass * DUC)
 {
 	this->DUC = DUC;
+
+	TwAddVarRW(DUC->g_pTweakBar, "Sphere Radius", TW_TYPE_FLOAT, &dropBallRadius, "step=0.01 min=0.01");
+	TwAddVarRW(DUC->g_pTweakBar, "Sphere Number", TW_TYPE_INT32, &numberDropBalls, "step=1 min=1");
+	TwAddVarRW(DUC->g_pTweakBar, "Sphere Mass", TW_TYPE_INT32, &dropBallMass, "step=0.5 min=0.5");
 }
 
 void ProjectSystemSimulator::drawFrame(ID3D11DeviceContext * pd3dImmediateContext)
